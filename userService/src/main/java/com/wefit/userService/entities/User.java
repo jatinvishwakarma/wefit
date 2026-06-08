@@ -2,14 +2,20 @@ package com.wefit.userService.entities;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.wefit.userService.dto.UserRequestDto;
+import com.wefit.userService.dto.UserResponseDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -51,10 +57,46 @@ public class User {
 
     private String profilePicUrl;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
     private UserRole role = UserRole.USER;
 
+    @CreationTimestamp
     private LocalDateTime createdDateTime;
 
+    @UpdateTimestamp
     private LocalDateTime updadatedDateTime;
 
+    public static User fromEntity(UserRequestDto userRequestDto) {
+        return User.builder()
+                .firstName(userRequestDto.getFirstName())
+                .lastName(userRequestDto.getLastName())
+                .userName(userRequestDto.getUserName())
+                .email(userRequestDto.getEmail())
+                .password(userRequestDto.getPassword())
+                .phoneNumber(userRequestDto.getPhoneNumber())
+                .bio(userRequestDto.getBio())
+                .gender(userRequestDto.getGender())
+                .dateOfBirth(userRequestDto.getDateOfBirth())
+                .role(userRequestDto.getRole())
+                .build();
+    }
+
+    public static UserResponseDto toDto(User user) {
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .userName(user.getUserName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .bio(user.getBio())
+                .gender(user.getGender())
+                .dateOfBirth(user.getDateOfBirth())
+                .role(user.getRole())
+                .profilePicUrl(user.getProfilePicUrl())
+                .createdDateTime(user.getCreatedDateTime())
+                .updadatedDateTime(user.getUpdadatedDateTime())
+                .build();
+    }
 }

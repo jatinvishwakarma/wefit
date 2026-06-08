@@ -28,9 +28,9 @@ public class AuthController {
         return ResponseEntity.ok(savedUser);
     }
 
-    @GetMapping("/profile/{email}")
-    public ResponseEntity<UserResponseDto> getUserProfile(@PathVariable String email) {
-        return ResponseEntity.ok(userService.getUserProfile(email));
+    @GetMapping("/{userId}/validate")
+    public ResponseEntity<Boolean> validateUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.existsById(userId));
     }
 
 }

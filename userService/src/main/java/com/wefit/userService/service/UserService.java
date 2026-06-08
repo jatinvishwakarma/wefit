@@ -71,4 +71,8 @@ public class UserService {
                 .updadatedDateTime(user.getUpdadatedDateTime())
                 .build();
     }
+
+    public boolean existsById(Long id) {
+        return userRepository.existsById(id);
+    }
 }
