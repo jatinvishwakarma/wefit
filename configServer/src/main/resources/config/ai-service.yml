@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: ai-service
+  data:
+    mongodb:
+      uri: ${MONGODB_URI_AI_SERVICE:mongodb://localhost:27017/AiRecommendationsdb}
+      database: ${MONGODB_DATABASE_AI_SERVICE:AiRecommendationsdb}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:activity-processor-group}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    properties:
+      spring.json.add.type.headers: false
+      spring.json.value.default.type: com.wefit.aiService.entities.Activity
+      spring.json.trusted.packages: "*"
+
+kafka:
+  topic:
+    name: ${KAFKA_TOPIC_NAME:activity-events}
+
+gemini:
+  api:
+    url: ${GEMINI_URL:https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent}
+    key: ${GEMINI_API_KEY}
+
+server:
+  port: 8083
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8761/eureka}
+  instance:
+    prefer-ip-address: true

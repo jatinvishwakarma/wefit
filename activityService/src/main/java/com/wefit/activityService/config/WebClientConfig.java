@@ -1,6 +1,6 @@
 package com.wefit.activityService.config;
 
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -8,14 +8,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
+    @Value("${user-service.base-url:http://localhost:8081}")
+    private String userServiceBaseUrl;
+
     @Bean
-    @LoadBalanced
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder();
     }
 
     @Bean
-    public WebClient userServiceWebClient(){
-        return webClientBuilder().baseUrl("http://user-service").build();
+    public WebClient userServiceWebClient() {
+        return webClientBuilder().baseUrl(userServiceBaseUrl).build();
     }
 }
