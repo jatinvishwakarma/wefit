@@ -7,7 +7,7 @@ if exist .env (
     )
 )
 
-echo Starting Eureka Server...
+echo Starting Eureka Server on port 8761...
 start "Eureka" cmd /k "cd eureka && mvnw.cmd spring-boot:run"
 echo Waiting for Eureka to start...
 timeout /t 30 /nobreak > nul
@@ -29,11 +29,21 @@ timeout /t 15 /nobreak > nul
 
 echo Starting AiService on port 8083...
 start "AiService" cmd /k "cd aiService && mvnw.cmd spring-boot:run"
+echo Waiting for AiService to start...
+timeout /t 15 /nobreak > nul
 
-echo All services started!
-echo Eureka:          http://localhost:8761
-echo Config Server:   http://localhost:8888
-echo UserService:     http://localhost:8081
-echo ActivityService: http://localhost:8082
-echo AiService:       http://localhost:8083
+echo Starting API Gateway on port 8080...
+start "ApiGateway" cmd /k "cd apiGateway && mvnw.cmd spring-boot:run"
+
+echo.
+echo ========================================
+echo   All services started!
+echo ========================================
+echo   Eureka:           http://localhost:8761
+echo   Config Server:    http://localhost:8888
+echo   API Gateway:      http://localhost:8080
+echo   UserService:      http://localhost:8081
+echo   ActivityService:  http://localhost:8082
+echo   AiService:        http://localhost:8083
+echo ========================================
 pause

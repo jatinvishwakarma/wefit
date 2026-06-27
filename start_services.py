@@ -51,29 +51,45 @@ def main():
         wait_sec=30
     )
     
-    # 2. UserService
+    # 2. Config Server
+    start_service(
+        name="Config Server on port 8888",
+        cmd_str="cd configServer && mvnw.cmd spring-boot:run",
+        wait_sec=20
+    )
+    
+    # 3. UserService
     start_service(
         name="UserService on port 8081",
         cmd_str="cd userService && mvnw.cmd spring-boot:run",
         wait_sec=15
     )
     
-    # 3. ActivityService
+    # 4. ActivityService
     start_service(
         name="ActivityService on port 8082",
         cmd_str="cd activityService && mvnw.cmd spring-boot:run",
         wait_sec=15
     )
     
-    # 4. AiService
+    # 5. AiService
     start_service(
         name="AiService on port 8083",
         cmd_str="cd aiService && mvnw.cmd spring-boot:run",
+        wait_sec=15
+    )
+
+    # 6. API Gateway
+    start_service(
+        name="API Gateway on port 8080",
+        cmd_str="cd apiGateway && mvnw.cmd spring-boot:run",
         wait_sec=0
     )
     
     print("\nAll services started!")
     print("Eureka: http://localhost:8761")
+    print("Config Server: http://localhost:8888")
+    print("API Gateway: http://localhost:8080")
     print("UserService: http://localhost:8081")
     print("ActivityService: http://localhost:8082")
     print("AiService: http://localhost:8083")

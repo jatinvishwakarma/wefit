@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/user/**,/api/users/**
+        - id: activity-service
+          uri: lb://activity-service
+          predicates:
+            - Path=/api/activity/**,/api/activities/**
+        - id: ai-service
+          uri: lb://ai-service
+          predicates:
+            - Path=/api/ai/**,/api/recommendations/**
+      server:
+        webflux:
+          routes:
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/api/user/**,/api/users/**
+            - id: activity-service
+              uri: lb://activity-service
+              predicates:
+                - Path=/api/activity/**,/api/activities/**
+            - id: ai-service
+              uri: lb://ai-service
+              predicates:
+                - Path=/api/ai/**,/api/recommendations/**
+
+server:
+  port: 8085
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8761/eureka}
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${KEYCLOAK_CERTS_URL:http://localhost:8090/realms/wefit/protocol/openid-connect/certs}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.web.reactive.DispatcherHandler: TRACE
+    org.springframework.cloud.loadbalancer: TRACE
+
+
