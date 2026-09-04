@@ -1,3 +1,7 @@
 # Environment variables file
 .env
 .claude/
+
+# Log and error files
+*.log
+*.err

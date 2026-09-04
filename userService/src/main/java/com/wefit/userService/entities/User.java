@@ -32,6 +32,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String keycloakId;
+
     @Column(nullable = false)
     private String firstName;
 
@@ -69,6 +72,7 @@ public class User {
 
     public static User fromEntity(UserRequestDto userRequestDto) {
         return User.builder()
+                .keycloakId(userRequestDto.getKeycloakId())
                 .firstName(userRequestDto.getFirstName())
                 .lastName(userRequestDto.getLastName())
                 .userName(userRequestDto.getUserName())
@@ -85,6 +89,7 @@ public class User {
     public static UserResponseDto toDto(User user) {
         return UserResponseDto.builder()
                 .id(user.getId())
+                .keycloakId(user.getKeycloakId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .userName(user.getUserName())

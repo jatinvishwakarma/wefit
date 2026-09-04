@@ -1,6 +1,4 @@
-package com.wefit.userService.dto;
-
-import com.wefit.userService.entities.UserRole;
+package com.wefit.apiGateway.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,8 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class UserRequestDto {
-
-    private String keycloakId;
 
     @NotBlank(message = "First name is required")
     private String firstName;
@@ -33,6 +29,7 @@ public class UserRequestDto {
     @NotBlank(message = "Password is required")
     private String password;
 
+    private String keycloakId;
     private String phoneNumber;
     private String bio;
     private String gender;

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.wefit.activityService.entities.Activity;
 
 @Repository
-public interface ActivityRepository extends MongoRepository<Activity, Long> {
+public interface ActivityRepository extends MongoRepository<Activity, String> {
 
 }

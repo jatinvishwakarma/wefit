@@ -6,3 +6,20 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${KEYCLOAK_CERTS_URL:http://localhost:8090/realms/wefit/protocol/openid-connect/certs}
+
+server:
+  port: 8085
+
+user-service:
+  base-url: ${USER_SERVICE_URL:http://localhost:8081}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

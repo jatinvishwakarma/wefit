@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserResponseDto {
     private Long id;
+    private String keycloakId;
     private String firstName;
     private String lastName;
     private String userName;
@@ -32,6 +33,7 @@ public class UserResponseDto {
     public static UserResponseDto toDto(User user) {
         return UserResponseDto.builder()
                 .id(user.getId())
+                .keycloakId(user.getKeycloakId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .userName(user.getUserName())

@@ -1,6 +1,11 @@
 spring:
   application:
     name: api-gateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${KEYCLOAK_CERTS_URL:http://localhost:8090/realms/wefit/protocol/openid-connect/certs}
   cloud:
     gateway:
       discovery:
@@ -11,30 +16,27 @@ spring:
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/api/user/**,/api/users/**
+            - Path=/api/user/**
+        - id: user-service-2
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
         - id: activity-service
           uri: lb://activity-service
           predicates:
-            - Path=/api/activity/**,/api/activities/**
+            - Path=/api/activity/**
+        - id: activity-service-2
+          uri: lb://activity-service
+          predicates:
+            - Path=/api/activities/**
         - id: ai-service
           uri: lb://ai-service
           predicates:
-            - Path=/api/ai/**,/api/recommendations/**
-      server:
-        webflux:
-          routes:
-            - id: user-service
-              uri: lb://user-service
-              predicates:
-                - Path=/api/user/**,/api/users/**
-            - id: activity-service
-              uri: lb://activity-service
-              predicates:
-                - Path=/api/activity/**,/api/activities/**
-            - id: ai-service
-              uri: lb://ai-service
-              predicates:
-                - Path=/api/ai/**,/api/recommendations/**
+            - Path=/api/ai/**
+        - id: ai-service-2
+          uri: lb://ai-service
+          predicates:
+            - Path=/api/recommendations/**
 
 server:
   port: 8085
@@ -47,13 +49,8 @@ eureka:
     register-with-eureka: true
   instance:
     prefer-ip-address: true
-
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${KEYCLOAK_CERTS_URL:http://localhost:8090/realms/wefit/protocol/openid-connect/certs}
+    ip-address: 127.0.0.1
+    hostname: localhost
 
 logging:
   level:
@@ -61,4 +58,5 @@ logging:
     org.springframework.web.reactive.DispatcherHandler: TRACE
     org.springframework.cloud.loadbalancer: TRACE
 
-
+user-service:
+  base-url: http://localhost:8081
