@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import com.wefit.userService.dto.UserRequestDto;
 import com.wefit.userService.dto.UserResponseDto;
 import com.wefit.userService.entities.User;
@@ -19,6 +21,7 @@ import lombok.AllArgsConstructor;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public UserResponseDto registerUser(UserRequestDto userRequestDto) {
         // If a user with this email already exists, link the Keycloak account to it
@@ -44,7 +47,7 @@ public class UserService {
                 .lastName(userRequestDto.getLastName())
                 .userName(userRequestDto.getUserName())
                 .email(userRequestDto.getEmail())
-                .password(userRequestDto.getPassword())
+                .password(passwordEncoder.encode(userRequestDto.getPassword()))
                 .phoneNumber(userRequestDto.getPhoneNumber())
                 .bio(userRequestDto.getBio())
                 .gender(userRequestDto.getGender())
