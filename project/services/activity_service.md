@@ -138,7 +138,13 @@ The `OTHER` value acts as a catch-all for activity types not yet in the enum.
 Same fields as the entity plus `id`, `createdAt`, and `updatedAt`. Has a static `toDto(Activity)` factory method.
 
 ---
+### 4. Exception Handling
 
+**Path:** `activityService/src/main/java/com/wefit/activityService/exception/`
+
+- **`ActivityNotFoundException.java`**: Thrown when an activity lookup fails.
+- **`InvalidActivityException.java`**: Thrown during creation if the associated user is invalid.
+- **`GlobalExceptionHandler.java`**: Uses `@RestControllerAdvice` to standardize all errors into RFC 7807 `ProblemDetail` JSON responses, injecting a `correlationId` and masking internal stack traces.
 ## API Endpoints
 
 ### ActivityController (`/api/activities`)

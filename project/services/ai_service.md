@@ -289,6 +289,13 @@ Simple read-only service:
 
 ---
 
+### 4. Exception Handling
+
+**Path:** `aiService/src/main/java/com/wefit/aiService/exception/`
+
+- **`AiProcessingException.java`**: Thrown during errors communicating with Gemini.
+- **`GlobalExceptionHandler.java`**: Uses `@RestControllerAdvice` to standardize all errors into RFC 7807 `ProblemDetail` JSON responses, injecting a `correlationId` and masking internal stack traces.
+
 ## API Endpoints
 
 ### RecommendationController (`api/recommendations`)
