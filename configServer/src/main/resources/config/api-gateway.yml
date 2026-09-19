@@ -39,18 +39,25 @@ spring:
             - Path=/api/recommendations/**
 
 server:
-  port: 8085
+  port: 8443
+  ssl:
+    key-store: file:../certs/keystore.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: wefit
 
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8761/eureka}
+      defaultZone: ${EUREKA_DEFAULT_ZONE:https://localhost:8761/eureka}
     fetch-registry: true
     register-with-eureka: true
   instance:
     prefer-ip-address: true
     ip-address: 127.0.0.1
     hostname: localhost
+    secure-port-enabled: true
+    non-secure-port-enabled: false
 
 logging:
   level:
@@ -59,4 +66,4 @@ logging:
     org.springframework.cloud.loadbalancer: TRACE
 
 user-service:
-  base-url: http://localhost:8081
+  base-url: https://localhost:8081

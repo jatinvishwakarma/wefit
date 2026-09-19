@@ -7,6 +7,9 @@ if exist .env (
     )
 )
 
+echo Checking for certificates...
+call generate-certs.bat
+
 echo Starting Eureka Server on port 8761...
 start "Eureka" cmd /k "cd eureka && mvnw.cmd spring-boot:run"
 echo Waiting for Eureka to start...
@@ -32,18 +35,18 @@ start "AiService" cmd /k "cd aiService && mvnw.cmd spring-boot:run"
 echo Waiting for AiService to start...
 timeout /t 15 /nobreak > nul
 
-echo Starting API Gateway on port 8080...
+echo Starting API Gateway on port 8443...
 start "ApiGateway" cmd /k "cd apiGateway && mvnw.cmd spring-boot:run"
 
 echo.
 echo ========================================
 echo   All services started!
 echo ========================================
-echo   Eureka:           http://localhost:8761
-echo   Config Server:    http://localhost:8888
-echo   API Gateway:      http://localhost:8080
-echo   UserService:      http://localhost:8081
-echo   ActivityService:  http://localhost:8082
-echo   AiService:        http://localhost:8083
+echo   Eureka:           https://localhost:8761
+echo   Config Server:    https://localhost:8888
+echo   API Gateway:      https://localhost:8443 (HTTP redirect on 8085)
+echo   UserService:      https://localhost:8081
+echo   ActivityService:  https://localhost:8082
+echo   AiService:        https://localhost:8083
 echo ========================================
 pause

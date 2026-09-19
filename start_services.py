@@ -44,6 +44,13 @@ def start_service(name, cmd_str, wait_sec):
 
 def main():
     load_env()
+    
+    print("Checking for certificates...")
+    if sys.platform == "win32":
+        subprocess.run(["generate-certs.bat"], shell=True)
+    else:
+        subprocess.run(["./generate-certs.sh"], shell=True)
+        
     # 1. Eureka
     start_service(
         name="Eureka Server",
@@ -81,18 +88,18 @@ def main():
 
     # 6. API Gateway
     start_service(
-        name="API Gateway on port 8080",
+        name="API Gateway on port 8443",
         cmd_str="cd apiGateway && mvnw.cmd spring-boot:run",
         wait_sec=0
     )
     
     print("\nAll services started!")
-    print("Eureka: http://localhost:8761")
-    print("Config Server: http://localhost:8888")
-    print("API Gateway: http://localhost:8080")
-    print("UserService: http://localhost:8081")
-    print("ActivityService: http://localhost:8082")
-    print("AiService: http://localhost:8083")
+    print("Eureka: https://localhost:8761")
+    print("Config Server: https://localhost:8888")
+    print("API Gateway: https://localhost:8443")
+    print("UserService: https://localhost:8081")
+    print("ActivityService: https://localhost:8082")
+    print("AiService: https://localhost:8083")
     
     input("\nPress Enter to exit...")
 
