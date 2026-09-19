@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 ---
 
+## [2026-09-19] — SCRUM-29
+
+### Added
+- **API Gateway**: Implemented `XssSanitizationFilter` as a global filter to sanitize POST/PUT/PATCH JSON bodies using `owasp-java-html-sanitizer`.
+- **API Gateway**: Added `RequestSize` default filter limiting requests to 5MB.
+
+---
+
 ## [2026-09-19] — SCRUM-28
 
 ### Added
