@@ -29,7 +29,7 @@ public class HttpToHttpsRedirectConfig {
                         host = host.split(":")[0];
                     }
                     String httpsUri = "https://" + (host != null ? host : "localhost") + ":" + httpsPort + request.uri();
-                    return response.status(HttpStatus.MOVED_PERMANENTLY)
+                    return response.status(HttpStatus.MOVED_PERMANENTLY.value())
                             .header("Location", httpsUri)
                             .send();
                 })
