@@ -54,7 +54,7 @@ userService/
 
 **Database:** PostgreSQL (`wefit`)
 **Table:** `users`
-**ORM:** Spring Data JPA / Hibernate with `ddl-auto: update` (schema auto-created/updated on startup)
+**ORM:** Spring Data JPA / Hibernate with Flyway for database migrations (schema validated on startup).
 
 | Column              | Type             | Constraints                 | Notes                                    |
 |---------------------|------------------|-----------------------------|------------------------------------------|
@@ -72,7 +72,7 @@ userService/
 | `profile_pic_url`   | `VARCHAR`        | Nullable                    |                                          |
 | `role`              | `VARCHAR`        | Default: `USER`             | Enum stored as string (`@Enumerated(EnumType.STRING)`) |
 | `created_date_time` | `TIMESTAMP`      | Auto-set on insert          | `@CreationTimestamp`                     |
-| `updadated_date_time` | `TIMESTAMP`    | Auto-set on update          | `@UpdateTimestamp` (note: typo in field name is in the code) |
+| `updated_date_time` | `TIMESTAMP`    | Auto-set on update          | `@UpdateTimestamp`                       |
 
 ---
 
@@ -234,7 +234,8 @@ From Config Server (`config/user-service.yml`):
 | `spring.datasource.url`        | `${DB_URL_USER_SERVICE:jdbc:postgresql://...}`  |
 | `spring.datasource.username`   | `${DB_USERNAME:postgres}`                       |
 | `spring.datasource.password`   | `${DB_PASSWORD}`                                |
-| `spring.jpa.hibernate.ddl-auto` | `update` (auto-create/modify tables)           |
+| `spring.jpa.hibernate.ddl-auto` | `validate` (validates schema on startup)       |
+| `spring.flyway.enabled`        | `true`                                          |
 | `spring.jpa.show-sql`          | `true` (SQL logged to console)                  |
 | `server.port`                   | `8081`                                          |
 | SSL                             | Enabled (PKCS12 keystore)                       |
@@ -245,5 +246,5 @@ From Config Server (`config/user-service.yml`):
 
 1. **PostgreSQL (not MongoDB):** User data is highly relational and requires strict uniqueness constraints (email, username). PostgreSQL with JPA is ideal for this.
 2. **BCrypt password hashing:** Industry standard for password storage. The `BCryptPasswordEncoder` is instantiated inline (not as a `@Bean`), which works but could be improved by injecting it via Spring's security configuration.
-3. **`ddl-auto: update`:** Great for development. For production, this should be switched to `validate` and migrations managed with Flyway or Liquibase.
+3. **Database Migrations:** Schema is managed with Flyway. Migration scripts are located in `userService/src/main/resources/db/migration/`. `ddl-auto` is set to `validate`.
 4. **No global error handler:** Exceptions are handled via `@ResponseStatus` annotations. A `@ControllerAdvice` could provide more consistent error responses in the future.
