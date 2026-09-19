@@ -52,7 +52,7 @@ The long-term goal is to evolve Wefit into a **social media fitness platform** w
 | Language               | Java                                         | 21           |
 | Framework              | Spring Boot                                  | 4.0.6        |
 | Cloud Toolkit          | Spring Cloud (Config, Gateway, Eureka)       | Latest       |
-| Relational DB          | PostgreSQL                                   | 15+          |
+| Relational DB          | PostgreSQL (with Flyway)                     | 15+          |
 | NoSQL DB               | MongoDB                                      | 7+           |
 | Message Broker         | Apache Kafka                                 | 3.x          |
 | AI / LLM               | Google Gemini API (`gemini-2.0-flash`)        | v1beta       |

@@ -6,7 +6,7 @@
 - Host: `localhost:5432`
 - Database: `wefit`
 - Username: `postgres`
-- DDL Strategy: `hibernate.ddl-auto: update`
+- DDL Strategy: Flyway database migrations (ddl-auto: validate)
 
 ### Adding a New JPA Entity
 

@@ -4,6 +4,20 @@ All notable changes to this project are documented in this file.
 
 ---
 
+## [2026-09-20] — SCRUM-32
+
+### Changed
+- **UserService**: Disabled `ddl-auto: update` and introduced Flyway for database migrations. Added `spring.flyway.enabled: true` and `baseline-on-migrate: true` to configuration.
+
+### Added
+- **UserService**: Added `flyway-core` and `flyway-database-postgresql` dependencies. Created initial migration script `V1__create_users_table.sql` with indexes for `email`, `user_name`, and `keycloak_id`.
+
+### Documentation Updated
+- `project/services/user_service.md` — Updated ORM details to reflect Flyway usage and fixed typo in column name.
+- `project/Wefit_Project_Overview.md` — Noted Flyway in Tech Stack Summary.
+- `.agents/rules/database.md` — Updated DDL Strategy for PostgreSQL.
+
+
 ## [2026-09-19] — SCRUM-31
 
 ### Fixed

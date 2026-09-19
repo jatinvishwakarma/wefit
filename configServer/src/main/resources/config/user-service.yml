@@ -7,12 +7,15 @@ spring:
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     properties:
       hibernate.format_sql: true
-    generate-ddl: true
+    generate-ddl: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
 
 server:
   port: 8081

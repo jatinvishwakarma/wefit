@@ -45,7 +45,7 @@ public class UserResponseDto {
                 .role(user.getRole())
                 .profilePicUrl(user.getProfilePicUrl())
                 .createdDateTime(user.getCreatedDateTime())
-                .updadatedDateTime(user.getUpdadatedDateTime())
+                .updatedDateTime(user.getUpdatedDateTime())
                 .build();
     }
 }
