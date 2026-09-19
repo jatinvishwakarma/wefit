@@ -167,6 +167,8 @@ Incoming Request
 | :--- | :--- | :--- |
 | **`KeyCloakUserSyncFilter`** | Auto-registration | Intercepts HTTP 404 from `UserService`, extracts user details from JWT, and automatically registers the user via `POST /api/user/sync`. |
 | **`RequestRateLimiter`** | Rate Limiting | Default filter using Redis. Configured for 100 req/s replenish rate and 200 burst capacity. Uses `userKeyResolver` for per-user/IP limiting. |
+| **`RequestSize`** | DoS Protection | Default filter rejecting requests with bodies larger than 5MB (HTTP 413). |
+| **`XssSanitizationFilter`** | Input Sanitization | Intercepts POST/PUT/PATCH JSON bodies, strips HTML/XSS scripts using OWASP HTML Sanitizer policy, and rewrites the body payload safely. |
 
 **Internal class: `UserSyncResponse`** — A minimal DTO with `Long id` and `String keycloakId`, used only within this filter to deserialise User Service responses.
 
