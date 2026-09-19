@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.wefit.activityService.dto.ActivityRequestDto;
 import com.wefit.activityService.dto.ActivityResponseDto;
+import com.wefit.activityService.exception.InvalidActivityException;
 import com.wefit.activityService.entities.Activity;
 import com.wefit.activityService.repositories.ActivityRepository;
 
@@ -29,7 +30,7 @@ public class ActivityService {
     public ActivityResponseDto addActivity(ActivityRequestDto activityRequestDto) {
         boolean isValidUser = userValidationService.validateUser(activityRequestDto.getUserId());
         if (!isValidUser) {
-            throw new RuntimeException("Invalid user");
+            throw new InvalidActivityException("Invalid user");
         }
         Activity activity = Activity.fromEntity(activityRequestDto);
         Activity savedActivity = activityRepository.save(activity);

@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file.
 
 ---
 
+## [2026-09-19] — SCRUM-30
+
+### Added
+- **Backend Services**: Implemented `@ControllerAdvice` via `GlobalExceptionHandler` across `UserService`, `ActivityService`, and `AiService`.
+- **Backend Services**: Error responses now natively format as RFC 7807 `ProblemDetail`. Stack traces are hidden and a UUID correlation ID is added to help with debugging.
+- **Backend Services**: Custom exceptions added: `UserNotFoundException`, `UserConflictException`, `ActivityNotFoundException`, `InvalidActivityException`, `AiProcessingException`.
+
+---
+
 ## [2026-09-19] — SCRUM-29
 
 ### Added

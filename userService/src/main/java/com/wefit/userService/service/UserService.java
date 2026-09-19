@@ -11,7 +11,8 @@ import com.wefit.userService.dto.UserRequestDto;
 import com.wefit.userService.dto.UserResponseDto;
 import com.wefit.userService.entities.User;
 import com.wefit.userService.entities.UserRole;
-import com.wefit.userService.exception.ResourceNotFoundException;
+import com.wefit.userService.exception.UserConflictException;
+import com.wefit.userService.exception.UserNotFoundException;
 import com.wefit.userService.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -36,7 +37,7 @@ public class UserService {
             }
             // If already linked to another keycloak account (unlikely but handled)
             if (!existingUser.getKeycloakId().equals(userRequestDto.getKeycloakId())) {
-                 throw new RuntimeException("Email already linked to another Keycloak account");
+                 throw new UserConflictException("Email already linked to another Keycloak account");
             }
             return convertToResponseDto(existingUser);
         }
@@ -63,19 +64,19 @@ public class UserService {
 
     public UserResponseDto getUserProfile(String identifier) {
         User user = userRepository.findByUserNameOrEmail(identifier, identifier)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with username or email: " + identifier));
+                .orElseThrow(() -> new UserNotFoundException("User not found with username or email: " + identifier));
         return convertToResponseDto(user);
     }
 
     public UserResponseDto getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         return convertToResponseDto(user);
     }
 
     public UserResponseDto getUserByKeycloakId(String keycloakId) {
         User user = userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with keycloakId: " + keycloakId));
+                .orElseThrow(() -> new UserNotFoundException("User not found with keycloakId: " + keycloakId));
         return convertToResponseDto(user);
     }
 

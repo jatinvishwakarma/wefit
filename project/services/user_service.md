@@ -125,6 +125,14 @@ Has a static `toDto(User)` factory method that mirrors the entity's conversion l
 
 ---
 
+### 5. Exception Handling
+
+**Path:** `userService/src/main/java/com/wefit/userService/exception/`
+
+- **`UserNotFoundException.java`**: Thrown when a user lookup (by ID, email, username, or Keycloak ID) fails.
+- **`UserConflictException.java`**: Thrown when attempting to link a Keycloak account to an email that is already linked to a different Keycloak account.
+- **`GlobalExceptionHandler.java`**: Uses `@RestControllerAdvice` to catch all exceptions (including validations and generics) and return RFC 7807 `ProblemDetail` JSON responses. Adds a randomly generated `correlationId` to the response payload and logs the stack trace internally without exposing it to the client.
+
 ## API Endpoints
 
 ### AuthController (`/api/user/auth`)
