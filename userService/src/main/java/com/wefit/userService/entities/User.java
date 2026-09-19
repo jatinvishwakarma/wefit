@@ -68,7 +68,8 @@ public class User {
     private LocalDateTime createdDateTime;
 
     @UpdateTimestamp
-    private LocalDateTime updadatedDateTime;
+    @Column(name = "updated_date_time")
+    private LocalDateTime updatedDateTime;
 
     public static User fromEntity(UserRequestDto userRequestDto) {
         return User.builder()
@@ -86,22 +87,4 @@ public class User {
                 .build();
     }
 
-    public static UserResponseDto toDto(User user) {
-        return UserResponseDto.builder()
-                .id(user.getId())
-                .keycloakId(user.getKeycloakId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .userName(user.getUserName())
-                .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
-                .bio(user.getBio())
-                .gender(user.getGender())
-                .dateOfBirth(user.getDateOfBirth())
-                .role(user.getRole())
-                .profilePicUrl(user.getProfilePicUrl())
-                .createdDateTime(user.getCreatedDateTime())
-                .updadatedDateTime(user.getUpdadatedDateTime())
-                .build();
-    }
 }

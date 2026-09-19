@@ -135,7 +135,7 @@ The `OTHER` value acts as a catch-all for activity types not yet in the enum.
 
 ### ActivityResponseDto (Output)
 
-Same fields as the entity plus `id`, `createdAt`, and `updatedAt`. Has a static `toDto(Activity)` factory method.
+Same fields as the entity plus `id`, `createdAt`, and `updatedAt`. Has a static `fromDto(ActivityRequestDto)` factory method.
 
 ---
 ### 4. Exception Handling
