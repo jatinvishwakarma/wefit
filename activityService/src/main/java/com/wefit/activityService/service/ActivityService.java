@@ -6,7 +6,7 @@ import com.wefit.activityService.dto.ActivityRequestDto;
 import com.wefit.activityService.dto.ActivityResponseDto;
 import com.wefit.activityService.exception.InvalidActivityException;
 import com.wefit.activityService.entities.Activity;
-import com.wefit.activityService.repositories.ActivityRepository;
+import com.wefit.activityService.repository.ActivityRepository;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ public class ActivityService {
         if (!isValidUser) {
             throw new InvalidActivityException("Invalid user");
         }
-        Activity activity = Activity.fromEntity(activityRequestDto);
+        Activity activity = Activity.fromDto(activityRequestDto);
         Activity savedActivity = activityRepository.save(activity);
 
         kafkaTemplate.send(topicName, savedActivity);

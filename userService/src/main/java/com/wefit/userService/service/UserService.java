@@ -55,7 +55,7 @@ public class UserService {
                 .dateOfBirth(userRequestDto.getDateOfBirth())
                 .role(userRequestDto.getRole() != null ? userRequestDto.getRole() : UserRole.USER)
                 .createdDateTime(LocalDateTime.now())
-                .updadatedDateTime(LocalDateTime.now())
+                .updatedDateTime(LocalDateTime.now())
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -95,7 +95,7 @@ public class UserService {
                 .role(user.getRole())
                 .profilePicUrl(user.getProfilePicUrl())
                 .createdDateTime(user.getCreatedDateTime())
-                .updadatedDateTime(user.getUpdadatedDateTime())
+                .updatedDateTime(user.getUpdatedDateTime())
                 .build();
     }
 

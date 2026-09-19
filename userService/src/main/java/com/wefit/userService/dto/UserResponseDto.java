@@ -28,7 +28,7 @@ public class UserResponseDto {
     private UserRole role;
     private String profilePicUrl;
     private LocalDateTime createdDateTime;
-    private LocalDateTime updadatedDateTime;
+    private LocalDateTime updatedDateTime;
 
     public static UserResponseDto toDto(User user) {
         return UserResponseDto.builder()

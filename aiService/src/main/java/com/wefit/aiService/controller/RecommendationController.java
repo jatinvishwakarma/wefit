@@ -14,7 +14,7 @@ import com.wefit.aiService.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("api/recommendations")
+@RequestMapping("/api/recommendations")
 @RequiredArgsConstructor
 public class RecommendationController {
 

@@ -36,7 +36,7 @@ public class Activity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public static Activity fromEntity(ActivityRequestDto activityRequestDto) {
+    public static Activity fromDto(ActivityRequestDto activityRequestDto) {
         return Activity.builder()
                 .activityType(activityRequestDto.getActivityType())
                 .durationInMinutes(activityRequestDto.getDurationInMinutes())

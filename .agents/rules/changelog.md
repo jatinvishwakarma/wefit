@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file.
 
 ---
 
+## [2026-09-19] — SCRUM-31
+
+### Fixed
+- **UserService**: Fixed `updadatedDateTime` typo across `User` entity and DTO. Removed duplicated mapping logic. Standardized Maven `groupId` to `com.wefit`.
+- **ActivityService**: Migrated `ActivityRepository` ID type to `String` (for MongoDB ObjectId). Cleaned up package naming (`repository`) and factory method naming (`fromDto`).
+- **AiService**: Corrected missing slash in `RecommendationController` base path (`/api/recommendations`).
+
+---
+
 ## [2026-09-19] — SCRUM-30
 
 ### Added
