@@ -12,7 +12,7 @@
 | Hardcoded DB credentials | 🔴 Critical | `userService/application.yml` | Password `Jatin1307@` in source control |
 | No authentication | 🔴 Critical | All controllers | Any client can access all endpoints |
 | No authorization | 🔴 Critical | All controllers | No role-based access control |
-| No CORS configuration | 🟡 Medium | All services | Cross-origin requests unrestricted |
+| ~~No CORS configuration~~ | 🟢 Fixed | API Gateway | Global CORS configured via `api-gateway.yml` |
 | No rate limiting | 🟡 Medium | All services | Vulnerable to brute force / DDoS |
 | Trusted all Kafka packages | 🟡 Medium | `aiService/application.yml` | `spring.json.trusted.packages: "*"` |
 | No HTTPS | 🟡 Medium | All services | Data transmitted in plaintext |
