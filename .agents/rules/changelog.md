@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 
 ---
 
+## [2026-09-20] — SCRUM-33
+
+### Added
+- **API Gateway**: Implemented global CORS configuration (`globalcors`) in `api-gateway.yml` to allow frontend clients to access the APIs.
+- **API Gateway**: Added `.cors(Customizer.withDefaults())` to `SecurityConfiguration.java` to handle CORS for Spring WebFlux security layer.
+
+### Documentation Updated
+- `project/services/api_gateway.md` — Noted CORS configuration in SecurityConfiguration and configuration sections.
+- `project/Wefit_Project_Overview.md` — Added `CORS_ALLOWED_ORIGINS` to Environment Variables.
+- `.agents/rules/security.md` — Marked CORS configuration vulnerability as Fixed.
+
+---
+
 ## [2026-09-20] — SCRUM-32
 
 ### Changed

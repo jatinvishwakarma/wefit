@@ -218,6 +218,7 @@ All secrets and environment-specific values are injected via the `.env` file in 
 | `GEMINI_URL`                      | AI Service          | Google Gemini API endpoint URL                       |
 | `GEMINI_API_KEY`                  | AI Service          | Google Gemini API key                                |
 | `KEYCLOAK_CERTS_URL`             | API Gateway         | Keycloak JWK Set URI for JWT validation              |
+| `CORS_ALLOWED_ORIGINS`           | API Gateway         | Comma-separated list of allowed origins for CORS     |
 | `REDIS_HOST`                      | API Gateway         | Redis host for rate limiting                         |
 | `REDIS_PORT`                      | API Gateway         | Redis port for rate limiting                         |
 

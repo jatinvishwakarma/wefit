@@ -85,6 +85,7 @@ public class SecurityConfiguration {
 - **Actuator public**: Health checks and monitoring endpoints are accessible without auth.
 - **Everything else authenticated**: Requires a valid JWT Bearer token.
 - **`oauth2ResourceServer.jwt()`**: Validates JWTs using the JWK Set URI from Keycloak.
+- **CORS enabled**: Uses `.cors(Customizer.withDefaults())` to allow WebFlux security to process preflight requests in conjunction with Spring Cloud Gateway's global CORS configuration.
 
 ---
 
@@ -264,7 +265,7 @@ user-service:
 Note: The local `application.yml` sets port `8085` as a fallback, but Config Server overrides it to `8443` with SSL.
 
 ### From Config Server: `api-gateway.yml`
-Sets the actual HTTPS port (8443), all 6 gateway routes, Eureka registration, Keycloak JWK URI, debug logging, and User Service URL.
+Sets the actual HTTPS port (8443), all 6 gateway routes, Eureka registration, Keycloak JWK URI, global CORS filtering, debug logging, and User Service URL.
 
 ---
 
