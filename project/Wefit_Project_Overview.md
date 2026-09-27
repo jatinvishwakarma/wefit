@@ -313,11 +313,11 @@ Here is what happens when a user logs a workout, step by step:
 
 | Feature                              | Status    | Description                                                        |
 |--------------------------------------|-----------|--------------------------------------------------------------------|
+| Mobile/Frontend Client               | ✅ Done    | React web app built with Vite, Keycloak, and vanilla CSS          |
 | Feed Service                         | 🔲 Planned | Timeline generation, posts, likes, comments, activity shares       |
 | Relationship Service                 | 🔲 Planned | Follow networks (following/followers graph)                        |
 | Real-time Notifications              | 🔲 Planned | WebSocket/SSE for friend activity alerts, comments, likes          |
 | Gamification & Leaderboards          | 🔲 Planned | Batch processing for leaderboard scores                            |
-| Mobile/Frontend Client               | 🔲 Planned | Next.js or React Native UI                                        |
 
 ---
 

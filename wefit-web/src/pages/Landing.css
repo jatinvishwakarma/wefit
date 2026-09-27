@@ -1,0 +1,142 @@
+.landing-page {
+  min-height: 100vh;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 64px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(201, 169, 78, 0.1);
+}
+
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 48px;
+}
+
+.nav-links a {
+  font-family: var(--font-label);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: var(--color-primary);
+}
+
+.nav-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10%;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(201, 169, 78, 0.1) 0%, transparent 70%);
+  z-index: -1;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-title {
+  font-size: 4.5rem;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: rgba(245, 240, 232, 0.85);
+  margin-bottom: 48px;
+  line-height: 1.6;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 24px;
+}
+
+.hero-graphic {
+  position: relative;
+}
+
+.floating-card {
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(201, 169, 78, 0.2);
+  box-shadow: var(--shadow-glow);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+.card-metric {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  margin: 16px 0;
+}
+
+.features {
+  padding: 120px 10%;
+  text-align: center;
+}
+
+.section-eyebrow {
+  margin-bottom: 64px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+}
+
+.feature-card {
+  text-align: left;
+}
+
+.feature-icon {
+  margin-bottom: 24px;
+}
+
+.feature-card p {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
