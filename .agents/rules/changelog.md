@@ -4,7 +4,19 @@ All notable changes to this project are documented in this file.
 
 ---
 
-## [2026-09-20] — SCRUM-33
+## [2026-09-27] — SCRUM-52, SCRUM-37, SCRUM-39
+
+### Added
+- **wefit-web**: Created new React frontend application using Vite, Keycloak, and vanilla CSS.
+- **wefit-web**: Implemented luxury design system with dark OLED background and gold accents.
+- **wefit-web**: Created base UI screens for Landing Page, Dashboard, Activity Log, and AI Insights.
+- **wefit-web**: Added placeholders for Feed (SCRUM-37) and Notifications (SCRUM-39).
+- **Stitch**: Generated high-fidelity luxury UI components using Stitch MCP.
+
+### Documentation Updated
+- `project/services/wefit-web.md` — Created documentation for the new frontend web app.
+- `project/Wefit_Project_Overview.md` — Added wefit-web to Roadmap and Architecture.
+- `README.md` — Marked frontend client as done.
 
 ### Added
 - **API Gateway**: Implemented global CORS configuration (`globalcors`) in `api-gateway.yml` to allow frontend clients to access the APIs.

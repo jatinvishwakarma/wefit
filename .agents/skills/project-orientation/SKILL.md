@@ -29,6 +29,7 @@ Wefit is a **Spring Cloud Microservices** fitness platform. Users log workouts, 
 | `userService`     | 8081       | PostgreSQL (`wefit`)            | User registration & profiles    |
 | `activityService` | 8082       | MongoDB (`WefitActivitydb`)     | Workout logging, Kafka producer |
 | `aiService`       | 8083       | MongoDB (`AiRecommendationsdb`) | Kafka consumer, Gemini AI       |
+| `wefit-web`       | 5173       | None                            | React UI Frontend (Vite)        |
 
 **Full architecture & data flow:** Read `c:\Wefit\project\Wefit_Project_Overview.md`
 
@@ -127,6 +128,11 @@ The highest-impact files — know where they are before starting any session.
 
 ### Environment
 - `.env.example` — Full reference of all env vars (DB, MongoDB, Kafka, Gemini, Keycloak, Eureka)
+
+### Wefit Web (Frontend)
+- `wefit-web/src/App.jsx` — React routing and Keycloak Protected Routes
+- `wefit-web/src/keycloak.js` — Keycloak instance initialization
+- `wefit-web/src/index.css` — Luxury design tokens and variables
 
 ---
 
