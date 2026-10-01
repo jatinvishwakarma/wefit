@@ -64,6 +64,26 @@ public class User {
     @Builder.Default
     private UserRole role = UserRole.USER;
 
+    @Builder.Default
+    private Integer xp = 0;
+
+    @Builder.Default
+    private Integer level = 1;
+
+    @Builder.Default
+    private Integer dailyXp = 0;
+
+    private java.time.LocalDate lastXpDate;
+
+    @Builder.Default
+    private Integer currentStreak = 0;
+
+    @Builder.Default
+    private Integer longestStreak = 0;
+
+    @Builder.Default
+    private Integer streakFreezes = 0;
+
     @CreationTimestamp
     private LocalDateTime createdDateTime;
 

@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'wefit-services'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'user-service:8081'
+          - 'activity-service:8082'
+          - 'ai-service:8083'
+          - 'api-gateway:8080'
+          - 'config-server:8888'
+          - 'eureka-server:8761'

@@ -33,16 +33,28 @@ public class GeminiService {
                         })
                 });
 
+        return callGemini(requestBody);
+    }
+    
+    public String getChatResponse(java.util.List<Map<String, Object>> contents) {
+        Map<String, Object> requestBody = Map.of(
+                "contents", contents,
+                "systemInstruction", Map.of("parts", new Object[]{
+                        Map.of("text", "You are an AI Personal Coach for the Wefit app. You provide encouraging, safe, and helpful fitness advice.")
+                })
+        );
+        return callGemini(requestBody);
+    }
+    
+    private String callGemini(Map<String, Object> requestBody) {
         log.info("Calling Gemini API at: {}", geminiApiUrl);
 
-        String response = restClient
+        return restClient
                 .post()
                 .uri(geminiApiUrl + "?key=" + geminiApiKey)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(requestBody)
                 .retrieve()
                 .body(String.class);
-
-        return response;
     }
 }

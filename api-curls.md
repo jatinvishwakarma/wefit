@@ -10,17 +10,17 @@
 
 ---
 
-## 🔐 Auth (`/api/user/auth`) — UserService :8081
+## 🔐 Auth (`/api/v1/user/auth`) — UserService :8081
 
 ### 1. Register a New User
-`POST /api/user/auth/register`
+`POST /api/v1/user/auth/register`
 
 > **Required fields:** `firstName`, `lastName`, `userName`, `email`, `password`  
 > **Optional fields:** `phoneNumber`, `bio`, `gender`, `dateOfBirth`, `role`  
 > **Roles:** `USER` | `ADMIN` | `COACH`
 
 ```bash
-curl -X POST http://localhost:8081/api/user/auth/register \
+curl -X POST http://localhost:8081/api/v1/user/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "firstName": "John",
@@ -41,29 +41,29 @@ curl -X POST http://localhost:8081/api/user/auth/register \
 ---
 
 ### 2. Validate User Exists
-`GET /api/user/auth/{userId}/validate`
+`GET /api/v1/user/auth/{userId}/validate`
 
 ```bash
-curl -X GET http://localhost:8081/api/user/auth/1/validate
+curl -X GET http://localhost:8081/api/v1/user/auth/1/validate
 ```
 
 **Expected Response:** `200 OK` — `true` or `false`
 
 ---
 
-## 👤 Users (`/api/users`) — UserService :8081
+## 👤 Users (`/api/v1/users`) — UserService :8081
 
 ### 3. Get User Profile by Username or Email
-`GET /api/users/profile/{identifier}`
+`GET /api/v1/users/profile/{identifier}`
 
 > `identifier` can be a **username** or **email address**
 
 ```bash
 # By username
-curl -X GET http://localhost:8081/api/users/profile/johndoe
+curl -X GET http://localhost:8081/api/v1/users/profile/johndoe
 
 # By email
-curl -X GET "http://localhost:8081/api/users/profile/john.doe@example.com"
+curl -X GET "http://localhost:8081/api/v1/users/profile/john.doe@example.com"
 ```
 
 **Expected Response:** `200 OK` — `UserResponseDto`
@@ -71,26 +71,26 @@ curl -X GET "http://localhost:8081/api/users/profile/john.doe@example.com"
 ---
 
 ### 4. Get User by ID
-`GET /api/users/{id}`
+`GET /api/v1/users/{id}`
 
 ```bash
-curl -X GET http://localhost:8081/api/users/1
+curl -X GET http://localhost:8081/api/v1/users/1
 ```
 
 **Expected Response:** `200 OK` — `UserResponseDto`
 
 ---
 
-## 🏃 Activities (`/api/activities`) — ActivityService :8082
+## 🏃 Activities (`/api/v1/activities`) — ActivityService :8082
 
 ### 5. Log a New Activity
-`POST /api/activities/add`
+`POST /api/v1/activities/add`
 
 > **ActivityType values:** `RUNNING` | `WALKING` | `CYCLING` | `SWIMMING` | `YOGA` | `MEDITATION` | `HIIT` | `STRENGTH_TRAINING` | `CARDIO` | `FLEXIBILITY` | `OTHER`  
 > **`startTime` format:** ISO 8601 — `"yyyy-MM-ddTHH:mm:ss"`
 
 ```bash
-curl -X POST http://localhost:8082/api/activities/add \
+curl -X POST http://localhost:8082/api/v1/activities/add \
   -H "Content-Type: application/json" \
   -d '{
     "userId": 1,
@@ -108,7 +108,7 @@ curl -X POST http://localhost:8082/api/activities/add \
 
 **Example with HIIT:**
 ```bash
-curl -X POST http://localhost:8082/api/activities/add \
+curl -X POST http://localhost:8082/api/v1/activities/add \
   -H "Content-Type: application/json" \
   -d '{
     "userId": 1,
@@ -127,29 +127,29 @@ curl -X POST http://localhost:8082/api/activities/add \
 
 ---
 
-## 🤖 AI Recommendations (`/api/recommendations`) — AiService :8083
+## 🤖 AI Recommendations (`/api/v1/recommendations`) — AiService :8083
 
 ### 6. Get All Recommendations for a User
-`GET /api/recommendations/user/{userId}`
+`GET /api/v1/recommendations/user/{userId}`
 
 ```bash
-curl -X GET http://localhost:8083/api/recommendations/user/1
+curl -X GET http://localhost:8083/api/v1/recommendations/user/1
 ```
 
-**Expected Response:** `200 OK` — Array of `Recommendation` objects
+**Expected Response:** `200 OK` — `CursorPageResponse<RecommendationResponseDto>` object
 
 ---
 
 ### 7. Get Recommendation for a Specific Activity
-`GET /api/recommendations/activity/{activityId}`
+`GET /api/v1/recommendations/activity/{activityId}`
 
 > `activityId` is the MongoDB ObjectId string returned when you log an activity (e.g. from endpoint #5)
 
 ```bash
-curl -X GET http://localhost:8083/api/recommendations/activity/6848f1a2c3d4e5f6a7b8c9d0
+curl -X GET http://localhost:8083/api/v1/recommendations/activity/6848f1a2c3d4e5f6a7b8c9d0
 ```
 
-**Expected Response:** `200 OK` — Single `Recommendation` object
+**Expected Response:** `200 OK` — Single `RecommendationResponseDto` object
 
 ---
 
@@ -159,23 +159,23 @@ Follow this sequence to test the full user journey:
 
 ```bash
 # Step 1 — Register a user
-curl -X POST http://localhost:8081/api/user/auth/register \
+curl -X POST http://localhost:8081/api/v1/user/auth/register \
   -H "Content-Type: application/json" \
   -d '{"firstName":"Jane","lastName":"Smith","userName":"janesmith","email":"jane@wefit.com","password":"Fit@2026","role":"USER"}'
 
 # Step 2 — Fetch the user (use id returned from step 1, e.g. 1)
-curl http://localhost:8081/api/users/1
+curl http://localhost:8081/api/v1/users/1
 
 # Step 3 — Validate user exists
-curl http://localhost:8081/api/user/auth/1/validate
+curl http://localhost:8081/api/v1/user/auth/1/validate
 
 # Step 4 — Log a running activity for the user
-curl -X POST http://localhost:8082/api/activities/add \
+curl -X POST http://localhost:8082/api/v1/activities/add \
   -H "Content-Type: application/json" \
   -d '{"userId":1,"activityType":"RUNNING","durationInMinutes":30,"caloriesBurned":280,"startTime":"2026-06-14T08:00:00","additionalMetrics":{"distanceKm":5}}'
 
 # Step 5 — Get AI recommendations for the user (use activityId from step 4 for endpoint #7)
-curl http://localhost:8083/api/recommendations/user/1
+curl http://localhost:8083/api/v1/recommendations/user/1
 ```
 
 ---
@@ -184,10 +184,10 @@ curl http://localhost:8083/api/recommendations/user/1
 
 | # | Method | Service | Endpoint | Description |
 |---|--------|---------|----------|-------------|
-| 1 | `POST` | UserService `:8081` | `/api/user/auth/register` | Register a new user |
-| 2 | `GET` | UserService `:8081` | `/api/user/auth/{userId}/validate` | Check if user exists |
-| 3 | `GET` | UserService `:8081` | `/api/users/profile/{identifier}` | Get profile by username/email |
-| 4 | `GET` | UserService `:8081` | `/api/users/{id}` | Get user by ID |
-| 5 | `POST` | ActivityService `:8082` | `/api/activities/add` | Log a new activity |
-| 6 | `GET` | AiService `:8083` | `/api/recommendations/user/{userId}` | Get all recs for a user |
-| 7 | `GET` | AiService `:8083` | `/api/recommendations/activity/{activityId}` | Get rec for an activity |
+| 1 | `POST` | UserService `:8081` | `/api/v1/user/auth/register` | Register a new user |
+| 2 | `GET` | UserService `:8081` | `/api/v1/user/auth/{userId}/validate` | Check if user exists |
+| 3 | `GET` | UserService `:8081` | `/api/v1/users/profile/{identifier}` | Get profile by username/email |
+| 4 | `GET` | UserService `:8081` | `/api/v1/users/{id}` | Get user by ID |
+| 5 | `POST` | ActivityService `:8082` | `/api/v1/activities/add` | Log a new activity |
+| 6 | `GET` | AiService `:8083` | `/api/v1/recommendations/user/{userId}` | Get all recs for a user (paginated) |
+| 7 | `GET` | AiService `:8083` | `/api/v1/recommendations/activity/{activityId}` | Get rec for an activity |

@@ -12,11 +12,12 @@ import com.wefit.userService.dto.UserRequestDto;
 import com.wefit.userService.dto.UserResponseDto;
 import com.wefit.userService.service.UserService;
 
+import org.springframework.cache.annotation.Cacheable;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 @AllArgsConstructor
 public class UserController {
 
@@ -28,16 +29,19 @@ public class UserController {
     }
 
     @GetMapping("/keycloak/{keycloakId}")
+    @Cacheable(value = "users", key = "#keycloakId")
     public ResponseEntity<UserResponseDto> getUserByKeycloakId(@PathVariable String keycloakId) {
         return ResponseEntity.ok(userService.getUserByKeycloakId(keycloakId));
     }
 
     @GetMapping("/profile/{identifier}")
+    @Cacheable(value = "users", key = "#identifier")
     public ResponseEntity<UserResponseDto> getUserProfile(@PathVariable String identifier) {
         return ResponseEntity.ok(userService.getUserProfile(identifier));
     }
 
     @GetMapping("/{id}")
+    @Cacheable(value = "users", key = "#id")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }

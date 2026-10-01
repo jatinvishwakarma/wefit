@@ -20,23 +20,40 @@ public class ActivityAiService {
 
     private final GeminiService geminiService;
     private final RecommendationRepository recommendationRepository;
+    private final SafetyEvaluationService safetyEvaluationService;
 
     public Recommendation generateRecommendation(Activity activity) {
         String prompt = createPromptForActivity(activity);
+        
+        if (!safetyEvaluationService.isPromptSafe(prompt)) {
+            log.warn("Unsafe prompt detected for activity: {}", activity.getId());
+            return saveFallbackRecommendation(activity, safetyEvaluationService.getUnsafePromptFallbackMessage());
+        }
+        
         try {
             String aiResponse = geminiService.getRecommendations(prompt);
             log.info("RESPONSE FROM AI- {}", aiResponse);
+            
+            if (!safetyEvaluationService.isOutputSafe(aiResponse)) {
+                log.warn("Unsafe AI output detected for activity: {}", activity.getId());
+                return saveFallbackRecommendation(activity, "The generated response was flagged by our safety filters.");
+            }
+            
             return processAiResponse(aiResponse, activity);
         } catch (Exception e) {
             log.error("Failed to generate recommendation via Gemini", e);
-            Recommendation rec = Recommendation.builder()
-                .userId(activity.getUserId())
-                .activityId(activity.getId())
-                .recommendation("Fallback Recommendation: We couldn't connect to the AI service, but keep up the good work!")
-                .createdAt(java.time.LocalDateTime.now())
-                .build();
-            return recommendationRepository.save(rec);
+            return saveFallbackRecommendation(activity, "Fallback Recommendation: We couldn't connect to the AI service, but keep up the good work!");
         }
+    }
+
+    private Recommendation saveFallbackRecommendation(Activity activity, String message) {
+        Recommendation rec = Recommendation.builder()
+            .userId(activity.getUserId())
+            .activityId(activity.getId())
+            .recommendation(message)
+            .createdAt(java.time.LocalDateTime.now())
+            .build();
+        return recommendationRepository.save(rec);
     }
 
     private Recommendation processAiResponse(String aiResponse, Activity activity) {

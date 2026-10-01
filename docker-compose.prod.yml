@@ -1,0 +1,56 @@
+version: '3.8'
+
+# Prod override: Limits memory, configures restart policies, and hides backend ports from host
+services:
+  postgres:
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  mongodb:
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  kafka:
+    restart: always
+
+  keycloak:
+    command: start
+    restart: always
+
+  eureka-server:
+    restart: always
+    ports:
+      - "127.0.0.1:8761:8761" # Only accessible from localhost if exposed, or completely remove
+
+  config-server:
+    restart: always
+    ports:
+      - "127.0.0.1:8888:8888"
+
+  user-service:
+    restart: always
+    ports: [] # Do not expose directly
+
+  activity-service:
+    restart: always
+    ports: []
+
+  ai-service:
+    restart: always
+    ports: []
+
+  api-gateway:
+    restart: always
+    ports:
+      - "443:8080" # Map to standard HTTPS if configured
+      
+  wefit-web:
+    restart: always
+    ports:
+      - "80:80"
