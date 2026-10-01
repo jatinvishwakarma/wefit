@@ -134,13 +134,23 @@ GEMINI_API_KEY=your_gemini_api_key
 ```
 
 ### ⚡ Starting the Services
-You can spin up all the services sequentially with a single command.
+
+You can run the entire Wefit stack using Docker Compose, or start them manually.
+
+#### 🐳 Using Docker Compose (Recommended)
+**For Local Development:**
+```bash
+# Starts the stack with debug ports open (5005-5007) and frontend hot-reloading
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+**For Production-like setup:**
+```bash
+# Starts the stack with resource limits and restricted ports
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
 
 #### On Windows (Batch Script)
-Run the script to launch each service in its own command window:
-```bash
-start-services.bat
-```
 
 #### Via Python Script
 Alternatively, run the python script which opens the services in separate PowerShell windows while preserving variables from the `.env` file:

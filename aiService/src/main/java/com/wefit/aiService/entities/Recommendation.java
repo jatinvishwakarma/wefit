@@ -26,6 +26,10 @@ public class Recommendation {
     private List<String> improvements;
     private List<String> suggestions;
     private List<String> safetyPrecautions;
+    
+    private Integer userRating;
+    private String userFeedback;
+    
     @CreatedDate
     private LocalDateTime createdAt;
 }

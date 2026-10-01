@@ -1,0 +1,80 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "developer" ]
+  pull_request:
+    branches: [ "main", "developer" ]
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  REGISTRY: "docker.io"
+
+jobs:
+  build-and-test-java:
+    name: Build & Test Microservices
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [ "userService", "activityService", "aiService", "apiGateway", "configServer", "eureka" ]
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build and Test with Maven
+        working-directory: ./${{ matrix.service }}
+        run: mvn clean package
+
+  build-and-test-node:
+    name: Build & Test Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './wefit-web/package-lock.json'
+
+      - name: Install Dependencies
+        working-directory: ./wefit-web
+        run: npm ci
+
+      - name: Build
+        working-directory: ./wefit-web
+        run: npm run build
+
+  docker-push:
+    name: Build & Push Docker Images
+    needs: [ build-and-test-java, build-and-test-node ]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        service: [ "userService", "activityService", "aiService", "apiGateway", "configServer", "eureka", "wefit-web" ]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.service }}
+          push: true
+          tags: ${{ env.DOCKER_USERNAME }}/${{ matrix.service }}:latest,${{ env.DOCKER_USERNAME }}/${{ matrix.service }}:${{ github.sha }}

@@ -12,7 +12,7 @@ import com.wefit.activityService.service.ActivityService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/activities")
+@RequestMapping("/api/v1/activities")
 @AllArgsConstructor
 public class ActivityController {
 

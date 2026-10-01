@@ -1,0 +1,32 @@
+version: '3.8'
+
+# Dev override: Exposes debug ports for Spring Boot services and maps local source code for frontend
+services:
+  user-service:
+    ports:
+      - "5005:5005"
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+
+  activity-service:
+    ports:
+      - "5006:5005"
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+
+  ai-service:
+    ports:
+      - "5007:5005"
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+
+  wefit-web:
+    build:
+      context: ./wefit-web
+      target: build
+    command: npm run dev -- --host
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./wefit-web:/app
+      - /app/node_modules

@@ -27,6 +27,11 @@ public class UserResponseDto {
     private String dateOfBirth;
     private UserRole role;
     private String profilePicUrl;
+    private Integer xp;
+    private Integer level;
+    private Integer currentStreak;
+    private Integer longestStreak;
+    private Integer streakFreezes;
     private LocalDateTime createdDateTime;
     private LocalDateTime updatedDateTime;
 
@@ -44,6 +49,11 @@ public class UserResponseDto {
                 .dateOfBirth(user.getDateOfBirth())
                 .role(user.getRole())
                 .profilePicUrl(user.getProfilePicUrl())
+                .xp(user.getXp())
+                .level(user.getLevel())
+                .currentStreak(user.getCurrentStreak())
+                .longestStreak(user.getLongestStreak())
+                .streakFreezes(user.getStreakFreezes())
                 .createdDateTime(user.getCreatedDateTime())
                 .updatedDateTime(user.getUpdatedDateTime())
                 .build();

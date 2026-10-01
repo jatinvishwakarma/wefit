@@ -1,7 +1,55 @@
-# Environment variables file
+# ─── Environment & Secrets ────────────────────────────────────────────────────
 .env
-.claude/
+.env.*
+*.env
 
-# Log and error files
+# ─── SSL Certificates (NEVER commit private keys or keystores) ────────────────
+certs/
+*.p12
+*.jks
+*.pem
+*.key
+*.crt
+
+# ─── IDE & Editor ─────────────────────────────────────────────────────────────
+.claude/
+.gemini/
+.idea/
+*.iml
+.vscode/settings.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ─── Agent / GSD State (local only) ──────────────────────────────────────────
+.gsd/
+scratch/
+model_capabilities.yaml
+GSD-STYLE.md
+
+# ─── Build Artifacts ──────────────────────────────────────────────────────────
+target/
+*.class
+*.jar
+*.war
+*.ear
+!.mvn/wrapper/maven-wrapper.jar
+
+# ─── Logs & Temp ──────────────────────────────────────────────────────────────
 *.log
 *.err
+*.tmp
+*.bak
+
+# ─── Node / Frontend ──────────────────────────────────────────────────────────
+node_modules/
+dist/
+.next/
+build/
+*.tsbuildinfo
+
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

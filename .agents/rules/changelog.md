@@ -4,6 +4,131 @@ All notable changes to this project are documented in this file.
 
 ---
 
+## [2026-10-01] — SCRUM-38 & SCRUM-40
+
+### Added
+- **relationshipService**: Created new microservice for social graph management (followers, following, blocking, friend requests).
+- **relationshipService**: Added PostgreSQL migration, JPA entities, and endpoints for follow flow.
+- **relationshipService**: Integrated Kafka to publish follow/unfollow events.
+- **mediaService**: Created new microservice for handling media uploads.
+- **mediaService**: Integrated with AWS S3 SDK to generate pre-signed URLs for direct-to-S3 uploads.
+- **docker-compose**: Added Minio service to simulate S3 locally. Added `relationship-service`, `media-service`, and `minio` to `docker-compose.yml`.
+- **configServer**: Created `application.yml` and `media-service.yml` for the new services.
+- **apiGateway**: Added routing rules and OpenAPI configuration for `relationship-service` and `media-service`.
+
+## [2026-10-01] — SCRUM-35
+
+### Changed
+- **apiGateway**: Added deprecation rewrite rules for legacy `/api/*` endpoints to rewrite to `/api/v1/*` with `Deprecation: true` headers.
+- **userService**: Migrated all endpoints to `/api/v1/` prefix. Updated `LeaderboardController` to return `CursorPageResponse`.
+- **activityService**: Migrated all endpoints to `/api/v1/` prefix.
+- **aiService**: Migrated all endpoints to `/api/v1/` prefix. Refactored `RecommendationController` to return `RecommendationResponseDto` and `CursorPageResponse`.
+- **configServer**: Updated `api-gateway.yml` to support OpenAPI routes and `/api/v1/` routing.
+- **pom.xml**: Added `springdoc-openapi-starter` to `userService`, `activityService`, `aiService`, and `apiGateway` for Swagger UI generation.
+
+### Added
+- **userService**: Added `CursorPageResponse` DTO wrapper for pagination.
+- **aiService**: Added `CursorPageResponse` and `RecommendationResponseDto`.
+
+### Documentation Updated
+- `api-curls.md` — Updated all endpoints to `/api/v1/`.
+- `project/services/ai_service.md` — Updated endpoints and DTOs.
+- `project/services/user_service.md` — Updated endpoints.
+- `project/services/activity_service.md` — Updated endpoints.
+- `project/services/api_gateway.md` — Documented deprecation rewrite filter and swagger UI.
+- `project/Wefit_Project_Overview.md` — Added OpenAPI/Swagger documentation reference.
+
+
+### Added
+- **DevOps/Performance**: Added Redis Caching.
+- **DevOps/Performance**: Injected `spring-boot-starter-data-redis` and `spring-boot-starter-cache` into `userService` and `activityService`.
+- **DevOps/Performance**: Added `@EnableCaching` to main application classes and `@Cacheable` to heavy-read endpoints (e.g. `getUserById`, `getUserProfile`, `getGlobalLeaderboard`).
+- **DevOps/Performance**: Configured Redis in `docker-compose.yml` and added connection properties to `user-service.yml` in configServer.
+
+## [2026-10-01] — SCRUM-59
+
+### Added
+- **DevOps**: Implemented Centralized Logging using Grafana Loki and `loki-logback-appender`.
+- **DevOps**: Configured all Spring Boot microservices with a standard JSON `logback-spring.xml` which automatically pushes logs directly to the Loki API endpoint over HTTP.
+- **DevOps**: Added Loki to `docker-compose.yml` and configured it as a datasource in Grafana for unified log aggregation and querying using LogQL.
+
+## [2026-10-01] — SCRUM-58
+
+### Added
+- **DevOps**: Added Monitoring & Observability with Prometheus and Grafana.
+- **DevOps**: Injected `micrometer-registry-prometheus` and `spring-boot-starter-actuator` into all Spring Boot microservices.
+- **DevOps**: Configured global endpoint exposure in `configServer/application.yml` (`/actuator/prometheus`).
+- **DevOps**: Created `prometheus.yml` scrape configuration to poll metrics from all microservices.
+- **DevOps**: Provisioned a base "Wefit Microservices" Grafana Dashboard to track HTTP request rates and errors.
+
+## [2026-10-01] — SCRUM-57
+
+### Added
+- **DevOps**: Added Kubernetes deployment manifests (`k8s/wefit-stack.yaml`).
+- **DevOps**: Configured ConfigMaps and Secrets for environment variables.
+- **DevOps**: Configured Deployments with appropriate replica counts and ClusterIP Services for all infrastructure (Postgres, MongoDB, Kafka, Keycloak) and Spring Boot microservices.
+- **DevOps**: Configured Nginx Ingress Controller to route `/api/*` to `api-gateway` and `/*` to `wefit-web`.
+
+## [2026-10-01] — SCRUM-56
+
+### Added
+- **DevOps**: Configured GitHub Actions CI/CD Pipeline (`ci.yml`).
+- **DevOps**: Matrix build for all Java microservices (`mvn clean package`).
+- **DevOps**: Build step for Node.js frontend (`wefit-web`).
+- **DevOps**: Added Docker image build and push steps to publish images to Docker Hub on `main` branch merges.
+
+## [2026-10-01] — SCRUM-55
+
+### Added
+- **DevOps**: Added Docker containerization for the full Wefit stack.
+- **DevOps**: Created optimized multi-stage `Dockerfile`s for all Spring Boot microservices (`userService`, `activityService`, `aiService`, `eureka`, `configServer`, `apiGateway`) and Node.js `wefit-web`.
+- **DevOps**: Created `docker-compose.yml` for unified orchestration including PostgreSQL, MongoDB, Kafka, ZooKeeper, and Keycloak with proper volume mounts and health checks.
+- **DevOps**: Added `docker-compose.dev.yml` and `docker-compose.prod.yml` to support local debugging and production-like deployment profiles.
+- **Documentation**: Updated `README.md` with instructions on how to start the stack using Docker Compose.
+
+## [2026-10-01] — SCRUM-48
+
+### Added
+- **userService**: Added Gamification Leaderboards.
+- **userService**: Added `LeaderboardService` to query users by XP.
+- **userService**: Added `LeaderboardController` with `/api/v1/leaderboard/global` endpoint.
+
+## [2026-10-01] — SCRUM-49
+
+### Added
+- **userService**: Added Gamification Badges and Achievements system.
+- **userService**: Added `Badge` and `UserBadge` entities.
+- **userService**: Added `BadgeRepository` and `UserBadgeRepository`.
+- **userService**: Added `BadgeService` to evaluate and unlock milestone badges (e.g. 7-Day Streak, Level 10).
+- **userService**: Integrated badge evaluation into `GamificationService`'s XP and streak granting workflow.
+
+## [2026-10-01] — SCRUM-50
+
+### Added
+- **userService**: Added Gamification Streak tracking.
+- **userService**: Updated `User` entity to include `currentStreak`, `longestStreak`, and `streakFreezes`.
+- **userService**: Updated `GamificationService` to manage streak increments, streak freezes, and missed days logic.
+- **userService**: Updated `UserResponseDto` to expose streak-related fields for profile display.
+
+## [2026-10-01] — SCRUM-51
+
+### Added
+- **userService**: Added Gamification XP and Levels system.
+- **userService**: Added `GamificationService` to manage XP logic, daily limits, and level calculation.
+- **userService**: Added `XpHistory` entity and `XpHistoryRepository` for tracking XP breakdown.
+- **userService**: Added `ActivityKafkaListener` to consume `activity-events` and grant XP.
+- **userService**: Updated `UserResponseDto` to expose `xp` and `level` fields.
+- **configServer**: Added Kafka consumer configuration for `user-service`.
+
+## [2026-10-01] — SCRUM-34
+
+### Added
+- **Global**: Created `.github/workflows/ci.yml` for running Maven tests on pull requests.
+- **userService**: Added `GlobalExceptionHandlerTest` for unit testing exception handler.
+- **userService**: Added `PostgresIntegrationTest` using Testcontainers for PostgreSQL integration testing.
+- **activityService**: Added `KafkaIntegrationTest` using Testcontainers for Kafka integration testing.
+- **Dependencies**: Added `spring-boot-starter-webmvc-test`, `spring-boot-starter-test`, `testcontainers`, and `jacoco-maven-plugin` to `pom.xml` across all services.
+
 ## [2026-09-27] — SCRUM-52, SCRUM-37, SCRUM-39
 
 ### Added

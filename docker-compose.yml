@@ -1,0 +1,340 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: wefit-postgres
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: wefit
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d wefit"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - wefit-network
+
+  mongodb:
+    image: mongo:6-jammy
+    container_name: wefit-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - wefit-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: wefit-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - wefit-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: wefit-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - wefit-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.7
+    container_name: wefit-keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+    ports:
+      - "8084:8080"
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+    networks:
+      - wefit-network
+
+  eureka-server:
+    build:
+      context: ./eureka
+    container_name: wefit-eureka
+    ports:
+      - "8761:8761"
+    environment:
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
+    networks:
+      - wefit-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  config-server:
+    build:
+      context: ./configServer
+    container_name: wefit-config
+    ports:
+      - "8888:8888"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - wefit-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  api-gateway:
+    build:
+      context: ./apiGateway
+    container_name: wefit-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - wefit-network
+
+  user-service:
+    build:
+      context: ./userService
+    container_name: wefit-user
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      - DB_URL_USER_SERVICE=jdbc:postgresql://postgres:5432/wefit
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    networks:
+      - wefit-network
+
+  activity-service:
+    build:
+      context: ./activityService
+    container_name: wefit-activity
+    ports:
+      - "8082:8082"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      - MONGODB_URI_ACTIVITY_SERVICE=mongodb://mongodb:27017/WefitActivitydb
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    networks:
+      - wefit-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: wefit-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - wefit-network
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: wefit-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - wefit-network
+
+  loki:
+    image: grafana/loki:latest
+    container_name: wefit-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-data:/loki
+    networks:
+      - wefit-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: wefit-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - wefit-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: wefit-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - wefit-network
+
+  ai-service:
+    build:
+      context: ./aiService
+    container_name: wefit-ai
+    ports:
+      - "8083:8083"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    networks:
+      - wefit-network
+
+  relationship-service:
+    build:
+      context: ./relationshipService
+    container_name: wefit-relationship
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      - DB_URL_RELATIONSHIP_SERVICE=jdbc:postgresql://postgres:5432/wefit
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    networks:
+      - wefit-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: wefit-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - wefit-network
+
+  media-service:
+    build:
+      context: ./mediaService
+    container_name: wefit-media
+    ports:
+      - "8087:8087"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    environment:
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - AWS_S3_ENDPOINT=http://minio:9000
+    networks:
+      - wefit-network
+
+  moderation-service:
+    build:
+      context: ./moderationService
+    container_name: wefit-moderation
+    ports:
+      - "8088:8088"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      - DB_URL_MODERATION_SERVICE=jdbc:postgresql://postgres:5432/wefit
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    networks:
+      - wefit-network
+
+  wefit-web:
+    build:
+      context: ./wefit-web
+    container_name: wefit-frontend
+    ports:
+      - "80:80"
+    networks:
+      - wefit-network
+
+networks:
+  wefit-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  mongodb-data:
+  kafka-data:
+  keycloak-data:
+  prometheus-data:
+  grafana-data:
+  loki-data:
+  redis-data:
+  minio-data:
