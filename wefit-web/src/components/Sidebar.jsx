@@ -10,16 +10,18 @@ import {
   Users, 
   User 
 } from 'lucide-react';
+import { useKeycloak } from '@react-keycloak/web';
 import './Sidebar.css';
 
 const Sidebar = () => {
+  const { keycloak } = useKeycloak();
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Activity Log', path: '/log', icon: Activity },
     { name: 'History', path: '/history', icon: History },
-    { name: 'AI Insights', path: '/insights', icon: BrainCircuit },
+    { name: 'AI Coach', path: '/insights', icon: BrainCircuit },
     { name: 'Feed', path: '/feed', icon: MessageSquare },
-    { name: 'Notifications', path: '/notifications', icon: Bell, badge: 7 },
+    { name: 'Notifications', path: '/notifications', icon: Bell, badge: 1 },
     { name: 'Friends', path: '/friends', icon: Users },
     { name: 'Profile', path: '/profile', icon: User },
   ];
@@ -27,7 +29,7 @@ const Sidebar = () => {
   return (
     <aside className="sidebar glass">
       <div className="sidebar-header">
-        <h2 className="text-gold">Wefit</h2>
+        <h2 className="text-volt">WEFIT</h2>
       </div>
       <nav className="sidebar-nav">
         {navItems.map((item) => (
@@ -44,10 +46,10 @@ const Sidebar = () => {
       </nav>
       <div className="sidebar-footer">
         <div className="user-info">
-          <div className="avatar">JV</div>
+          <div className="avatar">{keycloak.tokenParsed?.preferred_username?.charAt(0).toUpperCase() || 'A'}</div>
           <div className="user-details">
-            <span className="user-name">Jatin V.</span>
-            <span className="user-role">Premium Member</span>
+            <span className="user-name">{keycloak.tokenParsed?.preferred_username || 'Alex K.'}</span>
+            <span className="user-role">Free Member</span>
           </div>
         </div>
       </div>

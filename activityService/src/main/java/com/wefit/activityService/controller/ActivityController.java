@@ -18,8 +18,9 @@ public class ActivityController {
 
     private final ActivityService activityService;
 
+    @io.swagger.v3.oas.annotations.Operation(summary = "Add a new activity", description = "Creates a new fitness activity record for a user.")
     @PostMapping("/add")
-    public ResponseEntity<ActivityResponseDto> addActivity(@RequestBody ActivityRequestDto activityRequestDto) {
+    public ResponseEntity<ActivityResponseDto> addActivity(@jakarta.validation.Valid @RequestBody ActivityRequestDto activityRequestDto) {
         ActivityResponseDto savedActivity = activityService.addActivity(activityRequestDto);
         return ResponseEntity.ok(savedActivity);
     }

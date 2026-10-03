@@ -16,6 +16,7 @@ public class SecurityConfiguration {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
+                        .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/webjars/**").permitAll()
                         .anyExchange().authenticated())

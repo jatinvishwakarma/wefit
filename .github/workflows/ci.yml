@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [ "userService", "activityService", "aiService", "apiGateway", "configServer", "eureka" ]
+        service: [ "userService", "activityService", "aiService", "apiGateway", "configServer", "eureka", "gamificationService", "notificationService", "feedService", "relationshipService", "mediaService" ]
     
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     strategy:
       matrix:
-        service: [ "userService", "activityService", "aiService", "apiGateway", "configServer", "eureka", "wefit-web" ]
+        service: [ "userService", "activityService", "aiService", "apiGateway", "configServer", "eureka", "wefit-web", "gamificationService", "notificationService", "feedService", "relationshipService", "mediaService" ]
     
     steps:
       - uses: actions/checkout@v4

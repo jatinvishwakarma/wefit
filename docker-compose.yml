@@ -20,6 +20,7 @@ services:
     networks:
       - wefit-network
 
+
   mongodb:
     image: mongo:6-jammy
     container_name: wefit-mongodb
@@ -71,7 +72,7 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
     ports:
-      - "8084:8080"
+      - "8090:8080"
     volumes:
       - keycloak-data:/opt/keycloak/data
     networks:
@@ -233,8 +234,11 @@ services:
         condition: service_healthy
       config-server:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - MONGODB_URI_AI_SERVICE=mongodb://mongodb:27017/AiRecommendationsdb
     networks:
       - wefit-network
 
@@ -255,6 +259,48 @@ services:
         condition: service_started
     environment:
       - DB_URL_RELATIONSHIP_SERVICE=jdbc:postgresql://postgres:5432/wefit
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    networks:
+      - wefit-network
+
+  feed-service:
+    build:
+      context: ./feedService
+    container_name: wefit-feed
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      - DB_URL_FEED_SERVICE=jdbc:postgresql://postgres:5432/wefit
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    networks:
+      - wefit-network
+
+  notification-service:
+    build:
+      context: ./notificationService
+    container_name: wefit-notification
+    ports:
+      - "8086:8086"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      - DB_URL_NOTIFICATION_SERVICE=jdbc:postgresql://postgres:5432/wefit
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
     networks:
       - wefit-network
@@ -311,6 +357,27 @@ services:
         condition: service_started
     environment:
       - DB_URL_MODERATION_SERVICE=jdbc:postgresql://postgres:5432/wefit
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    networks:
+      - wefit-network
+
+  gamification-service:
+    build:
+      context: ./gamificationService
+    container_name: wefit-gamification
+    ports:
+      - "8089:8089"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/wefit
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
     networks:
       - wefit-network
