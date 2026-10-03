@@ -21,15 +21,20 @@ Wefit is a **Spring Cloud Microservices** fitness platform. Users log workouts, 
 
 **6 services, each its own Spring Boot app:**
 
-| Service           | Port       | DB                              | Key Role                        |
-|-------------------|------------|---------------------------------|---------------------------------|
-| `eureka`          | 8761       | None                            | Service discovery               |
-| `configServer`    | 8888       | None (filesystem)               | Centralised config              |
-| `apiGateway`      | 8443/8085  | None                            | Routing, auth, user-sync        |
-| `userService`     | 8081       | PostgreSQL (`wefit`)            | User registration & profiles    |
-| `activityService` | 8082       | MongoDB (`WefitActivitydb`)     | Workout logging, Kafka producer |
-| `aiService`       | 8083       | MongoDB (`AiRecommendationsdb`) | Kafka consumer, Gemini AI       |
-| `wefit-web`       | 5173       | None                            | React UI Frontend (Vite)        |
+| Service               | Port       | DB                              | Key Role                        |
+|-----------------------|------------|---------------------------------|---------------------------------|
+| `eureka`              | 8761       | None                            | Service discovery               |
+| `configServer`        | 8888       | None (filesystem)               | Centralised config              |
+| `apiGateway`          | 8443/8085  | None                            | Routing, auth, user-sync        |
+| `userService`         | 8081       | PostgreSQL (`wefit`)            | User registration & profiles    |
+| `activityService`     | 8082       | MongoDB (`WefitActivitydb`)     | Workout logging, Kafka producer |
+| `aiService`           | 8083       | MongoDB (`AiRecommendationsdb`) | Kafka consumer, Gemini AI       |
+| `gamificationService` | 8089       | PostgreSQL (`wefit`)            | XP, Badges, Streaks, Challenges |
+| `notificationService` | 8086       | MongoDB (`WefitNotificationdb`) | Real-time SSE push alerts       |
+| `feedService`         | 8084       | MongoDB (`WefitFeeddb`)         | Chronological social feed       |
+| `wefit-web`           | 5173       | None                            | React UI Frontend (Vite)        |
+| `admin-dashboard`     | 3000       | None                            | Next.js Admin Panel             |
+| `mobile-app`          | 19000      | None                            | React Native (Expo) Mobile App  |
 
 **Full architecture & data flow:** Read `c:\Wefit\project\Wefit_Project_Overview.md`
 
@@ -92,6 +97,11 @@ Detailed technical docs for every service:
 | `project/services/user_service.md`      | User Service: DB schema, all endpoints, service logic, queries        |
 | `project/services/activity_service.md`  | Activity Service: MongoDB schema, Kafka producer, user validation     |
 | `project/services/ai_service.md`        | AI Service: Kafka consumer, Gemini prompt, response parsing           |
+| `project/services/gamification_service.md`| Gamification Service: XP, levels, streaks, badges, challenges       |
+| `project/services/notification_service.md`| Notification Service: SSE connections, notification history         |
+| `project/services/feed_service.md`      | Feed Service: Chronological timeline, likes, comments                 |
+| `project/services/admin_dashboard.md`   | Admin Dashboard: Next.js internal tooling for telemetry & moderation  |
+| `project/services/mobile_app.md`        | Mobile App: Expo React Native client with native sensor integration   |
 
 > **Before modifying any service**, read its corresponding doc first.
 

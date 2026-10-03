@@ -70,25 +70,28 @@ The long-term goal is to evolve Wefit into a **social media fitness platform** w
 ```mermaid
 graph TD
     Client["Mobile / Web Client"] -->|HTTPS| Gateway["API Gateway :8443"]
-    Gateway -->|HTTP→HTTPS redirect :8085| Gateway
 
     Gateway -->|"lb://user-service"| UserService["User Service :8081"]
     Gateway -->|"lb://activity-service"| ActivityService["Activity Service :8082"]
     Gateway -->|"lb://ai-service"| AiService["AI Service :8083"]
+    Gateway -->|"lb://gamification-service"| GamificationService["Gamification Service :8089"]
+    Gateway -->|"lb://feed-service"| FeedService["Feed Service :8084"]
+    Gateway -->|"lb://relationship-service"| RelationshipService["Relationship Service :8085"]
+    Gateway -->|"lb://notification-service"| NotificationService["Notification Service :8086"]
+    Gateway -->|"lb://media-service"| MediaService["Media Service :8087"]
+    Gateway -->|"lb://moderation-service"| ModerationService["Moderation Service :8088"]
 
-    UserService & ActivityService & AiService -->|Register / Discover| Eureka["Eureka Server :8761"]
-    UserService & ActivityService & AiService -->|Fetch Config| ConfigServer["Config Server :8888"]
+    %% Service Discovery and Config
+    UserService & ActivityService & AiService & GamificationService & FeedService & RelationshipService & NotificationService & MediaService & ModerationService -->|Register| Eureka["Eureka Server :8761"]
+    UserService & ActivityService & AiService & GamificationService & FeedService & RelationshipService & NotificationService & MediaService & ModerationService -->|Config| ConfigServer["Config Server :8888"]
 
-    UserService -->|JPA / Hibernate| PostgreSQL[("PostgreSQL - wefit")]
-    ActivityService -->|Spring Data Mongo| MongoActivity[("MongoDB - WefitActivitydb")]
-    AiService -->|Spring Data Mongo| MongoAi[("MongoDB - AiRecommendationsdb")]
+    %% Databases
+    UserService & GamificationService -->|JPA| PostgreSQL[("PostgreSQL")]
+    ActivityService & AiService & FeedService & RelationshipService & NotificationService & MediaService & ModerationService -->|MongoTemplate| MongoDB[("MongoDB Cluster")]
 
-    ActivityService -->|"Publish → activity-events"| Kafka[["Apache Kafka :9092"]]
-    Kafka -->|"Consume"| AiService
-
-    AiService -->|REST POST| Gemini["Google Gemini 2.0 API"]
-
-    ActivityService -.->|"REST GET / Validate User"| UserService
+    %% Kafka
+    ActivityService & RelationshipService & ModerationService -->|"Publish Events"| Kafka[["Apache Kafka :9092"]]
+    Kafka -->|"Consume"| AiService & NotificationService
 
     Gateway -->|JWT validation| Keycloak["Keycloak :8090"]
 ```
@@ -135,7 +138,12 @@ Services **must** start in this order due to dependency chains:
 > - [Moderation Service](./services/moderation_service.md)
 > - [Relationship Service](./services/relationship_service.md)
 > - [Media Service](./services/media_service.md)
+> - [Gamification Service](./services/gamification_service.md)
+> - [Notification Service](./services/notification_service.md)
+> - [Feed Service](./services/feed_service.md)
 > - [Wefit Web](./services/wefit-web.md)
+> - [Admin Dashboard](./services/admin_dashboard.md)
+> - [Mobile App](./services/mobile_app.md)
 
 ---
 
