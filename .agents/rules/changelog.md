@@ -7,6 +7,9 @@ All notable changes to this project are documented in this file.
 ## [2026-10-03] — API Gateway Fixes, SSL Encryption, & Script Stabilization
 
 ### Fixed
+- **wefit-web**: Resolved continuous redirects and broken navigation. Added dedicated routing and full interactive views for `/log` (Activity Logger), `/history` (Workout History & Filters), `/insights` (AI Coach Studio), `/feed` (Social Feed & Cheers), `/notifications` (Notifications Center), `/friends` (Friends & Following), and `/profile` (Athlete Profile & Badges).
+- **wefit-web**: Added seamless "Explore Demo ⚡" and Guest Mode to allow immediate evaluation without forced Keycloak redirection.
+- **Keycloak**: Enabled public self-registration (`registrationAllowed: true`), reset user `jatin` password to `password123`, and created seeded demo user `demo` / `password123`.
 - **configServer & Microservices**: Resolved `InvalidAlgorithmParameterException: the trustAnchors parameter must be non-empty` by properly configuring `JAVA_TOOL_OPTIONS` to use `truststore.p12` with `-Djavax.net.ssl.trustStoreType=PKCS12` containing valid `trustedCertEntry` certificates.
 - **Observability / Loki**: Fixed `UnresolvedAddressException` and connection failure spam caused by hardcoded `http://loki:3100` hostname in `logback-spring.xml` across all services. Implemented `${LOKI_URL:-http://localhost:3100/loki/api/v1/push}` fallback.
 - **Infrastructure**: Updated `start-all.bat` and `docker-compose.yml` to ensure `loki` and `minio` containers boot automatically with port forwarding (`3100:3100`, `9092:9092` for Kafka).
