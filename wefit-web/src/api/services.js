@@ -63,22 +63,8 @@ export const getActivities = async () => {
 };
 
 export const logActivity = async (activity) => {
-    try {
-        const { data } = await apiClient.post('/activities', activity);
-        return data;
-    } catch {
-        // Save to local storage for realistic state persistence in demo mode
-        const current = await getActivities();
-        const newAct = {
-            id: Date.now(),
-            ...activity,
-            date: 'Just now',
-            pace: activity.distance ? `${(activity.duration / activity.distance).toFixed(2)} min/km` : 'Standard'
-        };
-        const updated = [newAct, ...current];
-        localStorage.setItem('wefit_custom_activities', JSON.stringify(updated));
-        return newAct;
-    }
+    const { data } = await apiClient.post('/activities', activity);
+    return data;
 };
 
 // Feed Service

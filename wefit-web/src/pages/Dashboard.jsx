@@ -93,17 +93,23 @@ const Dashboard = ({ initialView }) => {
   const [actDistance, setActDistance] = useState('');
   const [actCalories, setActCalories] = useState('');
   const [logSuccess, setLogSuccess] = useState(false);
+  const [logError, setLogError] = useState('');
 
   const logMutation = useMutation({
     mutationFn: logActivity,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
       setLogSuccess(true);
+      setLogError('');
       setActName('');
       setActDuration('');
       setActDistance('');
       setActCalories('');
       setTimeout(() => setLogSuccess(false), 4000);
+    },
+    onError: (err) => {
+      setLogError(err?.response?.data?.message || err?.message || 'Failed to save to backend. Please ensure ActivityService & API Gateway are running.');
+      setTimeout(() => setLogError(''), 6000);
     }
   });
 
@@ -333,6 +339,12 @@ const Dashboard = ({ initialView }) => {
               <div style={{ background: 'rgba(204,255,0,0.15)', border: '1px solid #ccff00', color: '#ccff00', padding: '14px 20px', borderRadius: '10px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <CheckCircle size={20} />
                 <span>Workout Logged Successfully! <strong>+100 XP</strong> awarded. Active streak continued! 🔥</span>
+              </div>
+            )}
+            {logError && (
+              <div style={{ background: 'rgba(255,77,77,0.15)', border: '1px solid #ff4d4d', color: '#ff4d4d', padding: '14px 20px', borderRadius: '10px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <ShieldAlert size={20} />
+                <span>{logError}</span>
               </div>
             )}
             <form onSubmit={handleLogSubmit} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
