@@ -20,6 +20,7 @@ services:
     networks:
       - wefit-network
 
+
   mongodb:
     image: mongo:6-jammy
     container_name: wefit-mongodb
@@ -71,7 +72,7 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
     ports:
-      - "8084:8080"
+      - "8090:8080"
     volumes:
       - keycloak-data:/opt/keycloak/data
     networks:

@@ -4,6 +4,24 @@ All notable changes to this project are documented in this file.
 
 ---
 
+## [2026-10-03] — API Gateway Fixes, SSL Encryption, & Script Stabilization
+
+### Fixed
+- **apiGateway**: Resolved `Port 8085 was already in use` and `java.net.ConnectException` startup failures by isolating ports and fixing Netty configurations.
+- **apiGateway**: Enabled HTTPS and TLS termination on port 8443 by configuring `wefit-keystore.jks`.
+- **Global**: All 9 microservices `application.yml` files updated to securely communicate with Config Server via `https://localhost:8888`.
+- **Infrastructure**: Refactored `start-all.bat` and `stop-all.bat`. Fixed severe PowerShell `NativeCommandError` crashes caused by `JAVA_TOOL_OPTIONS` printing to STDERR by wrapping execution in `cmd /c` to shield the pipeline.
+- **Infrastructure**: Fixed Expo default port collision (8081) with `UserService` by injecting `--port 8091` into the frontend startup script.
+- **Infrastructure**: Added `redis` back into `docker-compose.yml` and corrected `wefit-keycloak` port mapping (`8090:8080`).
+
+### Added
+- **Global**: Created `test_backend.py` to recursively test API Gateway routing and downstream microservice health without Postman.
+- **Security**: Bound `JAVA_TOOL_OPTIONS` with custom truststore (`wefit-truststore.jks`) globally across all microservices to authorize internal self-signed TLS handshakes.
+
+### Documentation Updated
+- `project/services/api_gateway.md` — Updated port documentation to 8443, SSL/TLS roles, and correct configurations.
+- `.agents/rules/changelog.md` — Logged today's backend and infrastructure stabilization.
+
 ## [2026-10-03] — Gamification, AI Coach, DevOps, Web/Mobile Clients (Phase 5 & 6)
 
 ### Added

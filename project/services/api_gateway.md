@@ -12,8 +12,9 @@
 
 The API Gateway is the **single entry point** for all client-facing traffic. It performs four critical jobs:
 
-1. **Routing:** Forwards incoming requests to the correct microservice based on URL path patterns.
-2. **Authentication:** Validates JWT Bearer tokens against Keycloak's JWK endpoint.
+- **Base URL:** `https://localhost:8443`
+- **Security:** Keycloak (OAuth2 / OpenID Connect) + SSL/TLS enabled
+- **Role:** Entry point for all client requests, routing, security, and rate limiting.
 3. **User Synchronisation:** Automatically syncs Keycloak-authenticated users into the User Service database.
 4. **TLS Termination & HTTP Redirect:** Serves HTTPS on port 8443 and redirects plain HTTP (port 8085) to HTTPS.
 
@@ -242,13 +243,12 @@ The Gateway's routes are defined in `configServer/src/main/resources/config/api-
 
 ## Configuration
 
-### Local: `application.yml`
 ```yaml
 spring:
   application:
     name: api-gateway
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:https://localhost:8888
   security:
     oauth2:
       resourceserver:
@@ -256,13 +256,17 @@ spring:
           jwk-set-uri: ${KEYCLOAK_CERTS_URL:http://localhost:8090/realms/wefit/protocol/openid-connect/certs}
 
 server:
-  port: 8085
+  port: 8443
+  ssl:
+    key-store: classpath:wefit-keystore.jks
+    key-store-password: changeit
+    key-store-type: JKS
 
 user-service:
   base-url: ${USER_SERVICE_URL:http://localhost:8081}
 ```
 
-Note: The local `application.yml` sets port `8085` as a fallback, but Config Server overrides it to `8443` with SSL.
+Note: The local `application.yml` sets port `8443` with SSL enabled so that it can securely communicate with Config Server and serve traffic securely.
 
 ### From Config Server: `api-gateway.yml`
 Sets the actual HTTPS port (8443), all 6 gateway routes, Eureka registration, Keycloak JWK URI, global CORS filtering, debug logging, and User Service URL.
