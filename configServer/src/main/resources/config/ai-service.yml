@@ -28,7 +28,7 @@ gemini:
 server:
   port: 8083
   ssl:
-    key-store: file:${user.dir}/../certs/keystore.p12
+    key-store: ${WEFIT_KEYSTORE:file:../certs/keystore.p12}
     key-store-password: changeit
     key-store-type: PKCS12
     key-alias: wefit

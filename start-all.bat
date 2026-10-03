@@ -3,11 +3,17 @@ echo ========================================
 echo   Starting all Wefit services...
 echo ========================================
 
+:: Capture absolute path to the root of the project (where this .bat lives)
+set WEFIT_ROOT=%~dp0
+
 :: Fix broken system PATH for Maven Wrapper and Node.js
 set PATH=C:\Windows\System32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\nodejs\;C:\Users\jatin\AppData\Roaming\npm;%PATH%
 
-:: Trust the self-signed certificate globally for all JVMs
-set JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=../certs/keystore.p12 -Djavax.net.ssl.trustStorePassword=changeit
+:: Set absolute keystore path so Tomcat SSL does not resolve it from temp dir
+set WEFIT_KEYSTORE=file:%WEFIT_ROOT%certs/keystore.p12
+
+:: Trust the self-signed certificate globally for all JVMs (use absolute path)
+set JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=%WEFIT_ROOT%certs\keystore.p12 -Djavax.net.ssl.trustStorePassword=changeit
 
 
 :: Load environment variables from .env if it exists
