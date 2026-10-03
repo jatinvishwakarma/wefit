@@ -1,7 +1,7 @@
 import Keycloak from 'keycloak-js';
 
 const keycloakConfig = {
-  url: 'http://localhost:8084',
+  url: 'http://localhost:8090',
   realm: 'wefit',
   clientId: 'wefit-frontend',
 };
