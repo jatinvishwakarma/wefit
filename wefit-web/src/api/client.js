@@ -18,8 +18,7 @@ apiClient.interceptors.request.use(
                 // Set the X-User-Id header for the microservices
                 config.headers['X-User-Id'] = keycloak.tokenParsed?.sub;
             } catch (error) {
-                console.error("Failed to refresh token", error);
-                keycloak.login();
+                console.warn("Failed to refresh token", error);
             }
         }
         return config;

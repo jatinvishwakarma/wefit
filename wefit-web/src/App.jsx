@@ -26,11 +26,13 @@ const LoadingScreen = () => (
   </div>
 );
 
-const ProtectedDashboard = () => {
+const ProtectedDashboard = ({ view }) => {
   const { keycloak: kc, initialized } = useKeycloak();
-  if (!initialized) return <LoadingScreen />;
-  if (!kc.authenticated) return <Navigate to="/" />;
-  return <Dashboard />;
+  const isGuest = localStorage.getItem('wefit_guest_mode') === 'true';
+
+  if (!initialized && !isGuest) return <LoadingScreen />;
+  if (!kc?.authenticated && !isGuest) return <Navigate to="/" />;
+  return <Dashboard initialView={view} />;
 };
 
 function AppRoutes() {
@@ -38,7 +40,14 @@ function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/dashboard" element={<ProtectedDashboard />} />
+        <Route path="/dashboard" element={<ProtectedDashboard view="dashboard" />} />
+        <Route path="/log" element={<ProtectedDashboard view="log" />} />
+        <Route path="/history" element={<ProtectedDashboard view="history" />} />
+        <Route path="/insights" element={<ProtectedDashboard view="insights" />} />
+        <Route path="/feed" element={<ProtectedDashboard view="feed" />} />
+        <Route path="/notifications" element={<ProtectedDashboard view="notifications" />} />
+        <Route path="/friends" element={<ProtectedDashboard view="friends" />} />
+        <Route path="/profile" element={<ProtectedDashboard view="profile" />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

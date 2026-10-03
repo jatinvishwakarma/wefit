@@ -626,6 +626,11 @@ const Landing = () => {
     }
   }, [keycloakObj, navigate]);
 
+  const handleGuestDemo = useCallback(() => {
+    localStorage.setItem('wefit_guest_mode', 'true');
+    navigate?.('/dashboard');
+  }, [navigate]);
+
   const { scrollYProgress } = useScroll();
   const navBg = useTransform(scrollYProgress, [0, 0.05], ['rgba(10,12,16,0)', 'rgba(10,12,16,0.92)']);
 
@@ -659,7 +664,15 @@ const Landing = () => {
           <a href="#quiz">Your plan</a>
           <a href="#coach">AI Coach</a>
         </div>
-        <div className="nav-actions">
+        <div className="nav-actions" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button 
+            className="btn-secondary" 
+            style={{ borderColor: '#ccff00', color: '#ccff00', padding: '8px 16px', fontSize: '0.9rem' }} 
+            onClick={handleGuestDemo}
+            title="Explore full app without login"
+          >
+            Explore Demo ⚡
+          </button>
           <button className="btn-secondary" onClick={handleLogin}>Log In</button>
           <button className="btn-primary" onClick={handleLogin}>Join Free</button>
         </div>
@@ -707,14 +720,23 @@ const Landing = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.9 }}
               className="hero-ctas"
+              style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}
             >
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(204,255,0,0.5)' }}
                 whileTap={{ scale: 0.95 }}
                 className="btn-primary btn-lg"
+                onClick={handleGuestDemo}
+              >
+                Launch Live App <ArrowRight size={20} style={{ marginLeft: 8 }} />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn-secondary btn-lg"
                 onClick={handleLogin}
               >
-                Start for free <ArrowRight size={20} style={{ marginLeft: 8 }} />
+                Keycloak Sign In
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -722,7 +744,7 @@ const Landing = () => {
                 className="btn-secondary btn-lg"
                 onClick={() => document.getElementById('app')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                See the app
+                See Preview
               </motion.button>
             </motion.div>
             <motion.div
@@ -770,7 +792,7 @@ const Landing = () => {
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 className="btn-primary full-width mt-4"
-                onClick={handleLogin}
+                onClick={handleGuestDemo}
               >
                 Save your streak <ArrowRight size={14} style={{ marginLeft: 4 }} />
               </motion.button>
@@ -853,7 +875,7 @@ const Landing = () => {
         </section>
 
         {/* ─── QUIZ ─── */}
-        <QuizSection onLogin={handleLogin} />
+        <QuizSection onLogin={handleGuestDemo} />
 
         {/* ─── APP PREVIEW ─── */}
         <AppPreview />
@@ -885,9 +907,9 @@ const Landing = () => {
             whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(204,255,0,0.5)' }}
             whileTap={{ scale: 0.95 }}
             className="btn-primary btn-lg"
-            onClick={handleLogin}
+            onClick={handleGuestDemo}
           >
-            Create your account <ArrowRight size={20} style={{ marginLeft: 8 }} />
+            Launch Free Now <ArrowRight size={20} style={{ marginLeft: 8 }} />
           </motion.button>
         </motion.section>
       </main>
