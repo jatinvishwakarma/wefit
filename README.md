@@ -54,14 +54,26 @@ We have built a robust backend foundation using a **Spring Cloud Microservice ar
 
 #### 🤖 AI Service (`aiService` — Port `8083`)
 *   **Kafka Consumer**: `ActivityMessageListener` listens on the `activity-events` topic. On each message, it calls `ActivityAiService` to generate a structured AI recommendation.
-*   **Gemini Integration**: `GeminiService` calls the **Google Gemini API** (`gemini-2.0-flash`) with a structured prompt. The prompt requests a JSON response with four sections: `analysis`, `improvements`, `suggestions`, and `safety`.
-*   **AI Response Parsing**: `ActivityAiService` deserializes the raw Gemini JSON, strips markdown fences, and maps it into a `Recommendation` entity with typed lists for improvements, suggestions, and safety precautions.
-*   **Fallback**: On Gemini API failure, a default fallback recommendation is saved so no activity goes unprocessed.
-*   **Fetch Endpoints**:
-    *   `GET /api/ai/recommendations/user/{userId}` — All recommendations for a user.
-    *   `GET /api/ai/recommendations/activity/{activityId}` — Recommendation for a specific activity.
-*   **Database**: AI recommendations stored in **MongoDB** (`AiRecommendationsdb`).
+*   **Gemini Integration**: Calls the **Google Gemini API** (`gemini-2.0-flash`) for multiple features:
+    * **Activity Recommendations**: JSON response with analysis, improvements, suggestions, and safety.
+    * **AI Coach**: Conversational `ChatSession` grounding with user history.
+    * **Smart Plans**: Multi-week `WorkoutPlan` generation and `NutritionPlan` guidance.
+    * **Analytics**: Burnout risk analysis via `AnalyticsReport`.
+    * **Safety Check**: Automated prompt/response safety filtering via `SafetyEvaluationService`.
+*   **Database**: AI records stored in **MongoDB** (`AiRecommendationsdb`).
 *   **Config Client**: Reads MongoDB URI, Kafka bootstrap servers, and Gemini API key from Config Server.
+
+#### 👥 Relationship Service (`relationshipService` — Port `8085`)
+*   **Social Graph**: Handles follows, unfollows, and user connection states.
+*   **Kafka Producer**: Publishes `follow` events to Kafka.
+*   **Database**: Stores relationships in **PostgreSQL**.
+
+#### 📸 Media Service (`mediaService` — Port `8087`)
+*   **Media Handling**: Orchestrates direct-to-S3 signed URL uploads for avatars, posts, and videos.
+*   **S3/Minio Integration**: Validates file types and sizes before generating short-lived upload tokens.
+
+#### 🛡️ Moderation Service (`moderationService` — Port `8084`)
+*   **Content Safety**: Moderates user-generated content for community guidelines.
 
 ### 3. Infrastructure & Developer Automation
 *   **`start-services.bat`**: Windows batch script that reads `.env` for environment variables and sequentially starts all services (Eureka → Config Server → User Service → Activity Service → AI Service) each in its own command window — includes a delay between starts to respect dependency order.
@@ -187,8 +199,10 @@ Here is the quick **End-to-End Test Journey**:
 
 ## 🗺️ Roadmap to a Social Media Fitness Platform
 Here are the next steps to transform this architecture into a social experience:
+*   [x] **Relationship Service**: Dedicated to user follow networks (following/followers graph database or JPA layout).
+*   [x] **Media Service**: Image/video upload, CDN integration, signed URLs, content scanning.
+*   [x] **Gamification & Challenges**: Creation of challenges, leaderboards, and scoring.
+*   [x] **Advanced AI Coach**: Chat sessions, personalized multi-week workout and nutrition plans.
 *   [ ] **Feed Service**: A new microservice dedicated to timeline generation, managing user posts, likes, comments, and activity shares.
-*   [ ] **Relationship Service**: Dedicated to user follow networks (following/followers graph database or JPA layout).
 *   [ ] **Real-time Notifications**: A WebSocket or SSE server to alert users of friends' activities, comments, or feed likes.
-*   [ ] **Gamification & Leaderboards**: Scheduled batch processing using Spring Batch or Spark to process user logs and compute leaderboard scores.
 *   [ ] **Mobile/Frontend Client**: A responsive interface built using Next.js or React Native to visually showcase the feeds, workout tracking, and AI tips.
