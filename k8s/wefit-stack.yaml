@@ -15,10 +15,10 @@ metadata:
   name: wefit-secrets
 type: Opaque
 stringData:
-  DB_PASSWORD: "postgres_password"
-  GEMINI_API_KEY: "your_gemini_api_key_here"
-  KEYCLOAK_ADMIN: "admin"
-  KEYCLOAK_ADMIN_PASSWORD: "admin"
+  DB_PASSWORD: "<replace-with-secure-db-password>"
+  GEMINI_API_KEY: "<replace-with-secure-api-key>"
+  KEYCLOAK_ADMIN: "<replace-with-secure-keycloak-admin>"
+  KEYCLOAK_ADMIN_PASSWORD: "<replace-with-secure-keycloak-password>"
 ---
 # Postgres
 apiVersion: apps/v1
@@ -391,6 +391,176 @@ spec:
   - port: 80
   selector:
     app: wefit-web
+---
+# Gamification Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gamification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gamification-service
+  template:
+    metadata:
+      labels:
+        app: gamification-service
+    spec:
+      containers:
+      - name: gamification-service
+        image: jatinvishwakarma/gamificationservice:latest
+        ports:
+        - containerPort: 8089
+        envFrom:
+        - configMapRef:
+            name: wefit-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gamification-service
+spec:
+  ports:
+  - port: 8089
+  selector:
+    app: gamification-service
+---
+# Notification Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+      - name: notification-service
+        image: jatinvishwakarma/notificationservice:latest
+        ports:
+        - containerPort: 8086
+        envFrom:
+        - configMapRef:
+            name: wefit-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+spec:
+  ports:
+  - port: 8086
+  selector:
+    app: notification-service
+---
+# Feed Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feed-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feed-service
+  template:
+    metadata:
+      labels:
+        app: feed-service
+    spec:
+      containers:
+      - name: feed-service
+        image: jatinvishwakarma/feedservice:latest
+        ports:
+        - containerPort: 8084
+        envFrom:
+        - configMapRef:
+            name: wefit-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: feed-service
+spec:
+  ports:
+  - port: 8084
+  selector:
+    app: feed-service
+---
+# Relationship Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: relationship-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: relationship-service
+  template:
+    metadata:
+      labels:
+        app: relationship-service
+    spec:
+      containers:
+      - name: relationship-service
+        image: jatinvishwakarma/relationshipservice:latest
+        ports:
+        - containerPort: 8085
+        envFrom:
+        - configMapRef:
+            name: wefit-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: relationship-service
+spec:
+  ports:
+  - port: 8085
+  selector:
+    app: relationship-service
+---
+# Media Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: media-service
+  template:
+    metadata:
+      labels:
+        app: media-service
+    spec:
+      containers:
+      - name: media-service
+        image: jatinvishwakarma/mediaservice:latest
+        ports:
+        - containerPort: 8087
+        envFrom:
+        - configMapRef:
+            name: wefit-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: media-service
+spec:
+  ports:
+  - port: 8087
+  selector:
+    app: media-service
 ---
 # Ingress Controller Config
 apiVersion: networking.k8s.io/v1

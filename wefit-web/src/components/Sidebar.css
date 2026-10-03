@@ -6,7 +6,7 @@
   top: 0;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid rgba(201, 169, 78, 0.1);
+  border-right: 1px solid var(--color-outline);
   padding: 24px 0;
   z-index: 100;
 }
@@ -18,7 +18,8 @@
 .sidebar-header h2 {
   font-family: var(--font-display);
   font-size: 2rem;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   margin: 0;
 }
 
@@ -35,48 +36,38 @@
   align-items: center;
   gap: 16px;
   padding: 12px 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   color: var(--color-text-secondary);
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s ease;
   position: relative;
 }
 
 .nav-item:hover {
-  background-color: var(--color-surface-2);
+  background-color: rgba(255, 255, 255, 0.05);
   color: var(--color-text-primary);
 }
 
 .nav-item.active {
-  color: var(--color-primary);
-  background-color: rgba(201, 169, 78, 0.05);
-}
-
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: -16px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 24px;
-  width: 4px;
-  background-color: var(--color-primary);
-  border-radius: 0 4px 4px 0;
+  color: #0A0C10;
+  background-color: var(--color-primary-container);
+  box-shadow: var(--glow-primary);
 }
 
 .nav-badge {
   margin-left: auto;
   background-color: var(--color-error);
-  color: #fff;
+  color: #0A0C10;
   font-size: 0.75rem;
   padding: 2px 8px;
   border-radius: 12px;
+  font-weight: 700;
   font-family: var(--font-label);
 }
 
 .sidebar-footer {
   padding: 24px;
-  border-top: 1px solid rgba(201, 169, 78, 0.1);
+  border-top: 1px solid var(--color-outline);
 }
 
 .user-info {
@@ -89,12 +80,12 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  color: var(--color-background);
+  background: var(--color-primary-container);
+  color: #0A0C10;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 800;
   font-family: var(--font-display);
 }
 
@@ -104,12 +95,13 @@
 }
 
 .user-name {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-text-primary);
 }
 
 .user-role {
   font-size: 0.75rem;
-  color: var(--color-primary);
+  color: var(--color-primary-container);
   font-family: var(--font-label);
+  font-weight: 700;
 }

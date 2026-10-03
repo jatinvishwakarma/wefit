@@ -25,6 +25,10 @@ certs/
 
 # ─── Agent / GSD State (local only) ──────────────────────────────────────────
 .gsd/
+.agent/
+.agents/
+.kilo/
+project/
 scratch/
 model_capabilities.yaml
 GSD-STYLE.md

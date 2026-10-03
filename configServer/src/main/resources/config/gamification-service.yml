@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: gamification-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/WefitGamificationdb}
+    username: ${SPRING_DATASOURCE_USERNAME:wefit_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:wefit_password}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:gamification-processor-group}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+server:
+  port: 8089
+  ssl:
+    key-store: file:../certs/keystore.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: wefit
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8761/eureka}
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    hostname: localhost
+    secure-port-enabled: true
+    non-secure-port-enabled: false

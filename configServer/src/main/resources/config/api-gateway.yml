@@ -22,10 +22,8 @@ spring:
               - PUT
               - DELETE
               - OPTIONS
-            allowedHeaders:
-              - Authorization
-              - Content-Type
-              - X-User-Id
+            allowedHeaders: "*"
+            allowCredentials: true
             maxAge: 3600
       default-filters:
         - name: RequestSize
@@ -87,6 +85,18 @@ spring:
           uri: lb://moderationService
           predicates:
             - Path=/api/v1/moderation/**
+        - id: feed-service-v1
+          uri: lb://feed-service
+          predicates:
+            - Path=/api/v1/feed/**, /api/v1/posts/**
+        - id: notification-service-v1
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/v1/notifications/**
+        - id: gamification-service-v1
+          uri: lb://gamification-service
+          predicates:
+            - Path=/api/v1/gamification/**, /api/v1/challenges/**, /api/v1/leaderboards/**
         - id: openapi-user-service
           uri: lb://user-service
           predicates:
@@ -123,6 +133,24 @@ spring:
             - Path=/moderation-service/v3/api-docs
           filters:
             - RewritePath=/moderation-service/(?<segment>.*), /$\{segment}
+        - id: openapi-feed-service
+          uri: lb://feed-service
+          predicates:
+            - Path=/feed-service/v3/api-docs
+          filters:
+            - RewritePath=/feed-service/(?<segment>.*), /$\{segment}
+        - id: openapi-notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/notification-service/v3/api-docs
+          filters:
+            - RewritePath=/notification-service/(?<segment>.*), /$\{segment}
+        - id: openapi-gamification-service
+          uri: lb://gamification-service
+          predicates:
+            - Path=/gamification-service/v3/api-docs
+          filters:
+            - RewritePath=/gamification-service/(?<segment>.*), /$\{segment}
 
 springdoc:
   swagger-ui:
@@ -140,14 +168,20 @@ springdoc:
         url: /media-service/v3/api-docs
       - name: moderation-service
         url: /moderation-service/v3/api-docs
+      - name: feed-service
+        url: /feed-service/v3/api-docs
+      - name: notification-service
+        url: /notification-service/v3/api-docs
+      - name: gamification-service
+        url: /gamification-service/v3/api-docs
 
 server:
   port: 8443
-  # ssl:
-#     key-store: file:../certs/keystore.p12
-#     key-store-password: changeit
-#     key-store-type: PKCS12
-#     key-alias: wefit
+  ssl:
+    key-store: file:../certs/keystore.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: wefit
 
 eureka:
   client:

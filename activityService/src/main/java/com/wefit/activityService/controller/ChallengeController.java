@@ -19,8 +19,9 @@ public class ChallengeController {
 
     // ─── Admin endpoints ───────────────────────────────────────────────────────
 
+    @io.swagger.v3.oas.annotations.Operation(summary = "Create a new challenge", description = "Creates a new admin challenge.")
     @PostMapping
-    public ResponseEntity<ChallengeResponse> createChallenge(@RequestBody ChallengeRequest request) {
+    public ResponseEntity<ChallengeResponse> createChallenge(@jakarta.validation.Valid @RequestBody ChallengeRequest request) {
         return ResponseEntity.ok(challengeService.createChallenge(request));
     }
 

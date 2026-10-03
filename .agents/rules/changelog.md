@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file.
 
 ---
 
+## [2026-10-03] — Gamification, AI Coach, DevOps, Web/Mobile Clients (Phase 5 & 6)
+
+### Added
+- **aiService**: Completed `SCRUM-10` by linking `ai-service` to MongoDB and fixing container networking.
+- **gamificationService**: Created `gamification-service` (SCRUM-11) to handle Leveling, XP, Streaks, Challenges, and Badges using PostgreSQL. Added `V1__Init_Gamification.sql` Flyway migration.
+- **wefit-web**: Updated `Dashboard.jsx` (SCRUM-12) to dynamically fetch User Profile, AI insights, Leaderboard, and Gamification stats via `axios` and `@tanstack/react-query`.
+- **admin-dashboard**: Scaffolded Next.js Admin Dashboard application repository (SCRUM-12).
+- **mobile-app**: Scaffolded Expo React Native mobile application repository (SCRUM-12).
+- **DevOps**: Completed `SCRUM-13`. Updated `.github/workflows/ci.yml` matrix with the new microservices (`gamificationService`, `feedService`, `mediaService`, etc.).
+- **DevOps**: Appended new Kubernetes Deployments and Services for all missing microservices to `k8s/wefit-stack.yaml`.
+- **DevOps**: Authored `OPERATIONS.md` defining operational runbooks, disaster recovery procedures, and Service Level Objectives (SLOs).
+
+### Documentation Updated
+- `.agents/rules/changelog.md` — Logged phase 5 & 6 completions.
+- `OPERATIONS.md` — Created for system administration procedures.
+
+
 ## [2026-10-03] — Backend Stabilization & Bug Fixes
 
 ### Fixed

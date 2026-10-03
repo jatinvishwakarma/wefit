@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: feed-service
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: default
+
+server:
+  port: 8084

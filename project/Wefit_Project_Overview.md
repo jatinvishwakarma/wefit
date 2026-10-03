@@ -112,13 +112,18 @@ Services **must** start in this order due to dependency chains:
 | Eureka Server         | 8761  | `eureka`               | None                            | Service discovery registry                                |
 | Config Server         | 8888  | `config-server`        | None (filesystem-backed)        | Centralised configuration server                          |
 | API Gateway           | 8443 / 8085 | `api-gateway`    | None                            | Reverse proxy, routing, JWT auth, Keycloak user sync      |
-| User Service          | 8081  | `user-service`         | PostgreSQL (`wefit`)            | Registration, profiles, gamification (XP/badges/streaks)  |
-| Activity Service      | 8082  | `activity-service`     | MongoDB (`WefitActivitydb`)     | Workout logging, Kafka producer, Challenge Engine         |
+| User Service          | 8081  | `user-service`         | PostgreSQL (`wefit`)            | Registration, profiles                                    |
+| Activity Service      | 8082  | `activity-service`     | MongoDB (`WefitActivitydb`)     | Workout logging, Kafka producer                           |
 | AI Service            | 8083  | `ai-service`           | MongoDB (`AiRecommendationsdb`) | Gemini AI: Coach, Workout Plans, Nutrition, Analytics, Safety |
-| Moderation Service    | 8087  | `moderation-service`   | MongoDB (`WefitModerationdb`)   | Content reports, auto-hide, admin moderation actions      |
+| Moderation Service    | 8088  | `moderation-service`   | MongoDB (`WefitModerationdb`)   | Content reports, auto-hide, admin moderation actions      |
 | Relationship Service  | 8085  | `relationship-service` | MongoDB (`WefitRelationshipdb`) | Follow/unfollow social graph                              |
-| Media Service         | 8086  | `media-service`        | MongoDB (`WefitMediadb`)        | File uploads, cloud storage, signed URLs                  |
-| Wefit Web             | 5173  | N/A (Vite/React)       | None                            | Responsive frontend web app (SCRUM-52)                   |
+| Media Service         | 8087  | `media-service`        | MongoDB (`WefitMediadb`)        | File uploads, cloud storage, signed URLs                  |
+| Gamification Service  | 8089  | `gamification-service` | PostgreSQL (`wefit`)            | XP, Levels, Streaks, Badges, Challenges (Phase 5)         |
+| Notification Service  | 8086  | `notification-service` | MongoDB (`WefitNotificationdb`) | Real-time SSE notifications                               |
+| Feed Service          | 8084  | `feed-service`         | MongoDB (`WefitFeeddb`)         | Activity timeline generation, likes, comments             |
+| Wefit Web             | 5173  | N/A (Vite/React)       | None                            | Responsive frontend web app (Phase 5)                     |
+| Admin Dashboard       | 3000  | N/A (Next.js)          | None                            | Next.js administrative console                            |
+| Mobile App            | 19000 | N/A (Expo)             | None                            | Cross-platform React Native app                           |
 
 > **Detailed technical documentation for each service** is in the `/project/services/` folder. Links:
 > - [Eureka Server](./services/eureka.md)
@@ -260,9 +265,10 @@ See [CERTIFICATE_MANAGEMENT.md](../CERTIFICATE_MANAGEMENT.md) for the full strat
 
 ### Steps
 1. Copy `.env.example` to `.env` and fill in your secrets.
-2. Run `start-services.bat` (Windows) or `python start_services.py` (cross-platform).
-3. Services start sequentially: Eureka → Config Server → User Service → Activity Service → AI Service → API Gateway.
-4. Access the Eureka dashboard at `https://localhost:8761` to verify all services are registered.
+2. Run `start-all.bat` (Windows) to automatically start Docker dependencies, all 9 backend microservices, and the React frontend.
+3. Services start sequentially: Eureka → Config Server → User Service → Activity Service → AI Service → Relationship Service → Media Service → Moderation Service → API Gateway → Frontend.
+4. Access the Eureka dashboard at `http://localhost:8761` to verify all services are registered.
+5. To stop everything cleanly, run `stop-all.bat`.
 
 ---
 

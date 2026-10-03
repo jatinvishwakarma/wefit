@@ -4,7 +4,7 @@
 
 .dashboard-content {
   flex: 1;
-  margin-left: 280px;
+  margin-left: 280px; /* Assuming sidebar is 280px */
   padding: 48px 64px;
 }
 
@@ -16,9 +16,11 @@
 }
 
 .greeting {
-  font-size: 2.75rem;
+  font-family: var(--font-display);
+  font-size: 3rem;
   margin-bottom: 8px;
   line-height: 1.15;
+  font-weight: 800;
 }
 
 .header-actions {
@@ -27,8 +29,8 @@
 }
 
 .icon-btn {
-  background: var(--color-surface-1);
-  border: 1px solid rgba(201, 169, 78, 0.2);
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline);
   color: var(--color-text-primary);
   width: 48px;
   height: 48px;
@@ -37,11 +39,13 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  transition: all 0.2s;
 }
 
 .icon-btn:hover {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 16px rgba(201, 169, 78, 0.15);
+  background: var(--color-surface-container-high);
+  border-color: var(--color-primary-container);
+  box-shadow: var(--glow-primary);
 }
 
 .notification-btn .badge {
@@ -49,7 +53,7 @@
   top: -4px;
   right: -4px;
   background-color: var(--color-error);
-  color: white;
+  color: #0A0C10;
   font-size: 0.7rem;
   font-family: var(--font-label);
   width: 20px;
@@ -58,6 +62,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 700;
 }
 
 .stats-grid {
@@ -77,13 +82,23 @@
 .stat-value {
   font-family: var(--font-display);
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 8px;
 }
 
+.stat-value-sm {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.stat-footer {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
 .insight-stat {
-  border: 1px solid rgba(201, 169, 78, 0.3);
-  background: linear-gradient(180deg, rgba(201, 169, 78, 0.05) 0%, rgba(22, 22, 33, 1) 100%);
+  border-color: var(--color-tertiary-container);
 }
 
 .dashboard-body {
@@ -99,9 +114,12 @@
   margin-bottom: 24px;
 }
 
-.btn-sm {
-  padding: 8px 16px;
-  font-size: 0.8rem;
+.section-header h3 {
+  font-size: 1.5rem;
+}
+
+.ml-2 {
+  margin-left: 12px;
 }
 
 .activity-list {
@@ -115,16 +133,24 @@
   align-items: center;
   gap: 24px;
   padding: 20px 24px;
+  transition: transform 0.2s;
 }
 
-.activity-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: rgba(201, 169, 78, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.activity-item:hover {
+  transform: translateX(4px);
+}
+
+.highlight-card {
+  border-color: var(--color-primary-container);
+  background: rgba(204, 255, 0, 0.05);
+}
+
+.activity-rank {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  width: 48px;
+  text-align: center;
 }
 
 .activity-details h4 {
@@ -133,20 +159,8 @@
   font-size: 1.125rem;
 }
 
-.text-btn {
-  background: transparent;
-  padding: 0;
-  margin-left: auto;
-}
-
-.text-btn:hover {
-  text-decoration: underline;
-  transform: none;
-  box-shadow: none;
-}
-
 .insight-card {
-  border: 1px solid rgba(201, 169, 78, 0.2);
+  border: 1px solid var(--color-primary-container);
 }
 
 .insight-header {
@@ -158,7 +172,6 @@
 
 .insight-header h4 {
   margin: 0;
-  color: var(--color-primary);
 }
 
 .insight-summary {
