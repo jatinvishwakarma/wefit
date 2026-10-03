@@ -21,14 +21,30 @@ import com.wefit.userService.dto.UserRequestDto;
 import com.wefit.userService.dto.UserResponseDto;
 import com.wefit.userService.service.UserService;
 
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
 @WebMvcTest(UserController.class)
+@Import(UserControllerTest.TestConfig.class)
 public class UserControllerTest {
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public org.springframework.cache.CacheManager cacheManager() {
+            return new ConcurrentMapCacheManager();
+        }
+    }
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
     private UserService userService;
+
+
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -60,7 +76,7 @@ public class UserControllerTest {
     void registerUser_ReturnsCreatedUser() throws Exception {
         when(userService.registerUser(any(UserRequestDto.class))).thenReturn(userResponseDto);
 
-        mockMvc.perform(post("/api/users/register")
+        mockMvc.perform(post("/api/v1/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userRequestDto)))
                 .andExpect(status().isOk())
@@ -72,7 +88,7 @@ public class UserControllerTest {
     void getUserByKeycloakId_ReturnsUser() throws Exception {
         when(userService.getUserByKeycloakId(anyString())).thenReturn(userResponseDto);
 
-        mockMvc.perform(get("/api/users/keycloak/keycloak-id-123"))
+        mockMvc.perform(get("/api/v1/users/keycloak/keycloak-id-123"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.keycloakId").value("keycloak-id-123"))
                 .andExpect(jsonPath("$.email").value("test@test.com"));
@@ -82,7 +98,7 @@ public class UserControllerTest {
     void getUserProfile_ReturnsUser() throws Exception {
         when(userService.getUserProfile(anyString())).thenReturn(userResponseDto);
 
-        mockMvc.perform(get("/api/users/profile/testuser"))
+        mockMvc.perform(get("/api/v1/users/profile/testuser"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName").value("testuser"))
                 .andExpect(jsonPath("$.email").value("test@test.com"));

@@ -87,6 +87,11 @@
 ### Missing Kafka producer in ActivityService
 - **Important**: As of current code, ActivityService has Kafka dependencies and configuration but does NOT actually publish messages to Kafka. The `KafkaTemplate.send()` call is **not implemented** in `ActivityService.java`. This means the AiService Kafka consumer will never receive events.
 
+### KafkaTemplate generic type injection failures
+- **Symptom**: `Parameter 1 of constructor in ... required a bean of type 'org.springframework.kafka.core.KafkaTemplate' that could not be found.`
+- **Cause**: Spring Boot 3 default auto-configuration provides a `KafkaTemplate<String, String>` bean. If you inject `KafkaTemplate<Object, Object>`, it will fail to start.
+- **Fix**: Use `KafkaTemplate<String, String>` in your service constructor.
+
 ---
 
 ## Build Issues
@@ -100,6 +105,12 @@
 ### Maven wrapper issues
 - **Symptom**: `mvnw.cmd` not executable or not found
 - **Fix**: Run from the service directory (e.g., `cd userService && mvnw.cmd spring-boot:run`)
+
+### Spring Boot 4 to 3 Version Downgrade
+- **Symptom**: `NoSuchMethodError` for AWS S3 Client Builder or `KafkaTemplate` auto-configuration clashes in new services (`mediaService`, `relationshipService`).
+- **Fix**: Downgrade the service from Spring Boot 4.x / Spring Cloud 2025 to Spring Boot 3.2.3 / Spring Cloud 2023.0.0.
+  - Make sure `flyway-database-postgresql` dependency is removed (it's Flyway 10 only).
+  - Change `spring-boot-starter-webmvc` back to `spring-boot-starter-web`.
 
 ---
 

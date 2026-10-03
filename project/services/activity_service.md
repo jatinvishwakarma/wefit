@@ -1,10 +1,10 @@
-# 🏃 Activity Service — Workout Logging & Kafka Producer
+# 🏃 Activity Service — Workout Logging, Kafka Producer & Challenge Engine
 
 > **Module:** `activityService/`
 > **Spring Name:** `activity-service`
 > **Port:** `8082`
 > **Database:** MongoDB (`WefitActivitydb`)
-> **Last Updated:** 2026-09-19
+> **Last Updated:** 2026-10-02
 
 ---
 
@@ -16,8 +16,7 @@ The Activity Service is the **core fitness tracking engine** of Wefit. It:
 2. Validates that the user exists by calling the User Service synchronously.
 3. Persists the activity to MongoDB.
 4. Publishes the saved activity to Kafka for asynchronous processing by the AI Service.
-
-This service is the **bridge** between the user-facing action (logging a workout) and the AI-powered analysis (generating recommendations).
+5. Manages **fitness challenges** — creation, joining, progress tracking, and completion.
 
 ---
 
@@ -26,26 +25,35 @@ This service is the **bridge** between the user-facing action (logging a workout
 ```
 activityService/
 ├── src/main/java/com/wefit/activityService/
-│   ├── ActivityServiceApplication.java    ← Main Spring Boot class
+│   ├── ActivityServiceApplication.java     ← Main Spring Boot class
 │   ├── config/
-│   │   ├── KafkaConfig.java               ← Kafka producer configuration
-│   │   ├── MongoConfigurations.java       ← Enables MongoDB auditing
-│   │   └── WebClientConfig.java           ← WebClient for User Service calls
+│   │   ├── KafkaConfig.java                ← Kafka producer configuration
+│   │   ├── MongoConfigurations.java        ← Enables MongoDB auditing
+│   │   └── WebClientConfig.java            ← WebClient for User Service calls
 │   ├── controller/
-│   │   └── ActivityController.java        ← REST endpoint for adding activities
+│   │   ├── ActivityController.java         ← POST /api/v1/activities/add
+│   │   └── ChallengeController.java        ← Challenge Engine REST API (SCRUM-47)
 │   ├── dto/
-│   │   ├── ActivityRequestDto.java        ← Input DTO
-│   │   └── ActivityResponseDto.java       ← Output DTO
+│   │   ├── ActivityRequestDto.java         ← Input DTO
+│   │   ├── ActivityResponseDto.java        ← Output DTO
+│   │   ├── ChallengeRequest.java           ← Create challenge DTO
+│   │   ├── ChallengeResponse.java          ← Challenge response DTO
+│   │   └── UserChallengeResponse.java      ← User's challenge progress DTO
 │   ├── entities/
-│   │   ├── Activity.java                  ← MongoDB document entity
-│   │   └── ActivityType.java              ← Enum of supported activity types
+│   │   ├── Activity.java                   ← MongoDB document entity
+│   │   ├── ActivityType.java               ← Enum of supported activity types
+│   │   ├── Challenge.java                  ← MongoDB: challenge definition
+│   │   └── UserChallenge.java              ← MongoDB: per-user challenge progress
 │   ├── repositories/
-│   │   └── ActivityRepository.java        ← MongoDB repository
+│   │   ├── ActivityRepository.java         ← MongoDB repository
+│   │   ├── ChallengeRepository.java        ← Challenge queries
+│   │   └── UserChallengeRepository.java    ← User challenge queries
 │   └── service/
-│       ├── ActivityService.java           ← Core business logic
-│       └── UserValidationService.java     ← Synchronous User Service call
+│       ├── ActivityService.java            ← Core business logic
+│       ├── ChallengeService.java           ← Challenge lifecycle (SCRUM-47)
+│       └── UserValidationService.java      ← Synchronous User Service call
 ├── src/main/resources/
-│   └── application.yml                    ← Bootstrap to Config Server
+│   └── application.yml                     ← Bootstrap to Config Server
 └── pom.xml
 ```
 
@@ -292,3 +300,52 @@ From Config Server (`config/activity-service.yml`):
 2. **Synchronous user validation:** We validate the user synchronously (blocking) before saving. This ensures data integrity — no activities for non-existent users. The tradeoff is added latency (~10-50ms for the WebClient call).
 3. **Kafka publish after save:** By publishing after the MongoDB save, we guarantee the activity has an `id`. If Kafka is temporarily down, the activity is still saved (no data loss), but the AI recommendation won't be generated until the Kafka message is eventually processed (requires retry/dead-letter queue in the future).
 4. **String ID (not Long):** MongoDB's native ObjectId maps cleanly to `String`. Using `Long` with MongoDB causes auto-generation conflicts and is an anti-pattern.
+5. **Challenge Engine lives here (not a separate service):** Challenges are fitness-domain data closely linked to activities. Embedding them in `activityService` avoids an unnecessary network hop and keeps the data model cohesive.
+
+---
+
+## Challenge Engine (SCRUM-47)
+
+### API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/v1/challenges` | Create a new challenge (admin) |
+| `GET` | `/api/v1/challenges/active` | List all active (non-expired) challenges |
+| `POST` | `/api/v1/challenges/{challengeId}/join/{userId}` | User joins a challenge |
+| `PATCH` | `/api/v1/challenges/{challengeId}/progress/{userId}?value=X` | Add progress toward a challenge |
+| `GET` | `/api/v1/challenges/user/{userId}` | List all challenges the user has joined |
+
+### `challenges` MongoDB Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | String | MongoDB ObjectId |
+| `title` | String | Challenge name |
+| `description` | String | Challenge description |
+| `goalType` | String | `DISTANCE`, `CALORIES`, `DURATION` |
+| `targetValue` | Double | Target to achieve |
+| `startDate` | LocalDateTime | Challenge start |
+| `endDate` | LocalDateTime | Challenge end |
+| `createdAt` | LocalDateTime | Created timestamp |
+
+### `user_challenges` MongoDB Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | String | MongoDB ObjectId |
+| `userId` | Long | FK to User Service |
+| `challengeId` | String | FK to `challenges` collection |
+| `progressValue` | Double | Accumulated progress (default 0.0) |
+| `isCompleted` | Boolean | Auto-set when progress >= target |
+| `completedAt` | LocalDateTime | Completion timestamp |
+| `joinedAt` | LocalDateTime | Join timestamp |
+
+### Kafka Events Published
+
+| Topic | Event | Payload |
+|-------|-------|---------|
+| `challenge-completed` | Fired when `progressValue >= targetValue` | `{userId, challengeId, challengeTitle}` |
+
+> **Design Decision**: The completion event on `challenge-completed` allows the User Service (gamification) to award XP/badges without tight coupling between services.
+

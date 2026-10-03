@@ -4,6 +4,48 @@ All notable changes to this project are documented in this file.
 
 ---
 
+## [2026-10-03] — Backend Stabilization & Bug Fixes
+
+### Fixed
+- **mediaService**, **moderationService**, **relationshipService**: Downgraded Spring Boot from 4.0.6 to 3.2.3 and Spring Cloud from 2025.1.1 to 2023.0.0 to fix `NoSuchMethodError` with AWS S3 SDK and resolve Kafka auto-configuration conflicts.
+- **relationshipService**: Reverted `KafkaTemplate` injection from `<Object, Object>` to `<String, String>` to align with Spring Boot 3 default auto-configuration.
+- **relationshipService**: Removed `flyway-database-postgresql` dependency (only needed for Flyway 10/Spring Boot 4).
+- **configServer**: Updated `relationship-service.yml` hibernate `ddl-auto` from `validate` to `update` so tables are correctly created on startup.
+- **mediaService**: Updated `spring-boot-starter-webmvc` to `spring-boot-starter-web` for correct HTTP support.
+- **Environment**: Fixed dangling Java process issues blocking port 8085 (`relationshipService`) by implementing clean script restarts.
+
+### Documentation Updated
+- `.agents/rules/changelog.md` — Logged stabilization fixes.
+- `.agents/rules/troubleshooting.md` — Documented Spring Boot 4 to 3 downgrade and Kafka generic type injection GOTCHA.
+
+---
+
+### Added
+- **aiService**: `ChatSession` entity, `AiCoachService` (rolling 10-msg context), `AiCoachController` — `POST /api/v1/ai/coach/{userId}/chat`.
+- **aiService**: `WorkoutPlan` entity, `WorkoutPlanService` (JSON-structured Gemini prompt), `WorkoutPlanController` — generate + list endpoints.
+- **aiService**: `NutritionPlan` entity, `NutritionPlanService` (Mifflin-St Jeor BMR/TDEE + Gemini meals), `NutritionPlanController`.
+- **aiService**: `AnalyticsReport` entity, `AnalyticsService` (burnout risk 0-10), `AnalyticsController`.
+- **aiService**: `SafetyEvaluationService` (SCRUM-46) — keyword safety on all Gemini I/O; `AiSafetyController`.
+- **activityService**: `Challenge` + `UserChallenge` entities, `ChallengeService` (create/join/progress/complete), `ChallengeController`.
+- **activityService**: Kafka producer on `challenge-completed` topic when challenge is auto-completed.
+- **configServer**: Added `/api/v1/challenges/**` route in `api-gateway.yml` → `activity-service`.
+
+### Fixed
+- **activityService**: Removed duplicate `spring-boot-starter-webmvc-test` in `pom.xml`.
+
+### Infrastructure
+- **Root `.gitignore`**: Now excludes `certs/`, `.gemini/`, `.gsd/`, `scratch/`, `model_capabilities.yaml`, `target/`, `node_modules/`.
+- **GitHub**: Pushed PR `feature/SCRUM-42-47-ai-coach-nutrition-analytics-challenges`.
+
+### Documentation Updated
+- `project/services/ai_service.md` — Full rewrite; all new entities, endpoints, schemas, design decisions.
+- `project/services/activity_service.md` — Challenge Engine section added.
+- `project/services/moderation_service.md` — Created (new service).
+- `project/services/relationship_service.md` — Created (new service).
+- `project/services/media_service.md` — Created (new service).
+
+---
+
 ## [2026-10-01] — SCRUM-38 & SCRUM-40
 
 ### Added

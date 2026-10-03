@@ -55,7 +55,7 @@ public class ActivityControllerTest {
     void addActivity_ReturnsSavedActivity() throws Exception {
         when(activityService.addActivity(any(ActivityRequestDto.class))).thenReturn(activityResponseDto);
 
-        mockMvc.perform(post("/api/activities/add")
+        mockMvc.perform(post("/api/v1/activities/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(activityRequestDto)))
                 .andExpect(status().isOk())
