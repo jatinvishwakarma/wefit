@@ -306,7 +306,7 @@ services:
       - wefit-network
 
   minio:
-    image: minio/minio:latest
+    image: elestio/minio:latest
     container_name: wefit-minio
     ports:
       - "9000:9000"
