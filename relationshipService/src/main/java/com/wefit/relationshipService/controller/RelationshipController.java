@@ -5,9 +5,6 @@ import com.wefit.relationshipService.dto.RelationshipResponseDto;
 import com.wefit.relationshipService.service.RelationshipService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.RequestMapping;
-import org.springframework.web.bind.RequestParam;
-import org.springframework.web.bind.RestController;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;

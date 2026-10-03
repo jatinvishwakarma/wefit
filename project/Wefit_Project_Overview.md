@@ -2,7 +2,7 @@
 
 > **Audience:** New engineers and interns joining the Wefit team.
 > **Author:** Principal Software Engineer.
-> **Last Updated:** 2026-09-19.
+> **Last Updated:** 2026-10-02.
 > **Auto-Update Policy:** This document is automatically updated by our AI agent workflow at the end of every Jira ticket. See [Auto-Update Policy](#-auto-update-policy) for details.
 
 ---
@@ -107,14 +107,18 @@ Services **must** start in this order due to dependency chains:
 
 ## 📂 Service Index
 
-| Service           | Port  | Spring Name        | Database                     | Role                                    |
-|-------------------|-------|--------------------|------------------------------|-----------------------------------------|
-| Eureka Server     | 8761  | `eureka`           | None                         | Service discovery registry              |
-| Config Server     | 8888  | `config-server`    | None (filesystem-backed)     | Centralised configuration server        |
-| API Gateway       | 8443 (HTTPS) / 8085 (HTTP redirect) | `api-gateway` | None | Reverse proxy, routing, auth, user sync |
-| User Service      | 8081  | `user-service`     | PostgreSQL (`wefit`)         | User registration, profiles, validation |
-| Activity Service  | 8082  | `activity-service` | MongoDB (`WefitActivitydb`)  | Workout logging, Kafka producer         |
-| AI Service        | 8083  | `ai-service`       | MongoDB (`AiRecommendationsdb`) | Kafka consumer, Gemini AI integration  |
+| Service               | Port  | Spring Name            | Database                        | Role                                                      |
+|-----------------------|-------|------------------------|---------------------------------|-----------------------------------------------------------|
+| Eureka Server         | 8761  | `eureka`               | None                            | Service discovery registry                                |
+| Config Server         | 8888  | `config-server`        | None (filesystem-backed)        | Centralised configuration server                          |
+| API Gateway           | 8443 / 8085 | `api-gateway`    | None                            | Reverse proxy, routing, JWT auth, Keycloak user sync      |
+| User Service          | 8081  | `user-service`         | PostgreSQL (`wefit`)            | Registration, profiles, gamification (XP/badges/streaks)  |
+| Activity Service      | 8082  | `activity-service`     | MongoDB (`WefitActivitydb`)     | Workout logging, Kafka producer, Challenge Engine         |
+| AI Service            | 8083  | `ai-service`           | MongoDB (`AiRecommendationsdb`) | Gemini AI: Coach, Workout Plans, Nutrition, Analytics, Safety |
+| Moderation Service    | 8087  | `moderation-service`   | MongoDB (`WefitModerationdb`)   | Content reports, auto-hide, admin moderation actions      |
+| Relationship Service  | 8085  | `relationship-service` | MongoDB (`WefitRelationshipdb`) | Follow/unfollow social graph                              |
+| Media Service         | 8086  | `media-service`        | MongoDB (`WefitMediadb`)        | File uploads, cloud storage, signed URLs                  |
+| Wefit Web             | 5173  | N/A (Vite/React)       | None                            | Responsive frontend web app (SCRUM-52)                   |
 
 > **Detailed technical documentation for each service** is in the `/project/services/` folder. Links:
 > - [Eureka Server](./services/eureka.md)
@@ -123,6 +127,10 @@ Services **must** start in this order due to dependency chains:
 > - [User Service](./services/user_service.md)
 > - [Activity Service](./services/activity_service.md)
 > - [AI Service](./services/ai_service.md)
+> - [Moderation Service](./services/moderation_service.md)
+> - [Relationship Service](./services/relationship_service.md)
+> - [Media Service](./services/media_service.md)
+> - [Wefit Web](./services/wefit-web.md)
 
 ---
 
@@ -139,13 +147,17 @@ Services **must** start in this order due to dependency chains:
 
 ### Asynchronous (Kafka)
 
-| Producer          | Topic              | Consumer       | Payload                | Purpose                                      |
-|-------------------|--------------------|----------------|------------------------|----------------------------------------------|
-| Activity Service  | `activity-events`  | AI Service     | `Activity` JSON object | Trigger AI recommendation generation         |
+| Producer              | Topic                   | Consumer             | Payload                         | Purpose                                          |
+|-----------------------|-------------------------|----------------------|---------------------------------|--------------------------------------------------|
+| Activity Service      | `activity-events`       | AI Service           | `Activity` JSON object          | Trigger AI recommendation generation             |
+| Activity Service      | `challenge-completed`   | User Service         | `{userId, challengeId, title}`  | Award XP/badge on challenge completion           |
+| Relationship Service  | `user-followed`         | Notification Service | `{followerId, followingId}`     | Notify user of new follower                      |
+| Relationship Service  | `user-unfollowed`       | Notification Service | `{followerId, followingId}`     | Notify user of unfollow event                    |
+| Moderation Service    | `content-moderated`     | Notification Service | `{contentId, action}`           | Notify content owner of moderation decision      |
 
 **Kafka Serialisation:**
 - **Producer** (Activity Service): `StringSerializer` (key) + `JsonSerializer` (value). Type headers are disabled (`spring.json.add.type.headers: false`).
-- **Consumer** (AI Service): `StringDeserializer` (key) + `JsonDeserializer` (value). Trusted packages set to `*`. Default type is `com.wefit.aiService.entities.Activity`. Consumer group: `activity-processor-group`.
+- **Consumer** (AI Service): `StringDeserializer` (key) + `JsonDeserializer` (value). Trusted packages set to `*`. Default type is `com.wefit.aiService.entities.Activity`. Consumer group: `ai-recommendation-group`.
 
 ---
 
@@ -259,7 +271,7 @@ See [CERTIFICATE_MANAGEMENT.md](../CERTIFICATE_MANAGEMENT.md) for the full strat
 Here is what happens when a user logs a workout, step by step:
 
 ```
-1. Client sends POST /api/activities/add with JWT Bearer token
+1. Client sends POST /api/v1/activities/add with JWT Bearer token
    ↓
 2. API Gateway (port 8443) receives the request
    ↓
@@ -272,7 +284,7 @@ Here is what happens when a user logs a workout, step by step:
    d. Adds X-User-Id header
    ↓
 5. Gateway routes to Activity Service (lb://activity-service)
-   matching Path=/api/activities/**
+   matching Path=/api/v1/activities/**
    ↓
 6. ActivityController.addActivity() receives ActivityRequestDto
    ↓
@@ -293,8 +305,9 @@ Here is what happens when a user logs a workout, step by step:
    b. Calls ActivityAiService.generateRecommendation(activity)
    ↓
 10. ActivityAiService:
-    a. Creates structured prompt with activity details
-    b. Calls GeminiService.getRecommendations(prompt)
+    a. Calls SafetyEvaluationService to check prompt for unsafe keywords
+    b. Creates structured prompt with activity details
+    c. Calls GeminiService.getRecommendations(prompt)
        → POST to Gemini API with JSON body
     c. Parses Gemini's JSON response:
        - Strips markdown code fences (```json ... ```)
@@ -303,7 +316,7 @@ Here is what happens when a user logs a workout, step by step:
     e. Saves to MongoDB (AiRecommendationsdb, "ai_recommendations" collection)
     f. On failure → saves a fallback recommendation
    ↓
-11. Client can later fetch: GET /api/recommendations/user/{userId}
+11. Client can later fetch: GET /api/v1/recommendations/user/{userId}
     → Returns top 5 recommendations, ordered by createdAt DESC
 ```
 
@@ -313,11 +326,32 @@ Here is what happens when a user logs a workout, step by step:
 
 | Feature                              | Status    | Description                                                        |
 |--------------------------------------|-----------|--------------------------------------------------------------------|
-| Mobile/Frontend Client               | ✅ Done    | React web app built with Vite, Keycloak, and vanilla CSS          |
-| Feed Service                         | 🔲 Planned | Timeline generation, posts, likes, comments, activity shares       |
-| Relationship Service                 | 🔲 Planned | Follow networks (following/followers graph)                        |
-| Real-time Notifications              | 🔲 Planned | WebSocket/SSE for friend activity alerts, comments, likes          |
-| Gamification & Leaderboards          | 🔲 Planned | Batch processing for leaderboard scores                            |
+| Mobile/Frontend Client               | ✅ Done    | React web app built with Vite, Keycloak, and vanilla CSS           |
+| Feed Service                         | ✅ Done    | Timeline generation, posts, likes, comments, activity shares       |
+| Relationship Service                 | ✅ Done    | Follow networks (following/followers graph)                        |
+| Real-time Notifications              | ✅ Done    | WebSocket/SSE for friend activity alerts, comments, likes          |
+| Gamification & Leaderboards          | ✅ Done    | Batch processing for leaderboard scores, XP, Badges, Streaks       |
+| Infrastructure & DevOps              | ✅ Done    | Docker Compose, Kubernetes manifests, Prometheus, Grafana, CI/CD   |
+
+---
+
+## 🐋 Docker & Kubernetes Deployment
+
+The project is fully containerized and includes production-ready deployment configurations:
+
+### Docker Compose
+- `docker-compose.yml`: Main development environment with all Spring Boot microservices, Keycloak, MongoDB, PostgreSQL, Kafka, Zookeeper, and MinIO.
+- `docker-compose.prod.yml`: Production overrides.
+- `docker-compose.dev.yml`: Local dev setup overrides.
+
+### Kubernetes (K8s)
+- Manifests located in `k8s/wefit-stack.yaml`.
+- Deploy using: `kubectl apply -f k8s/wefit-stack.yaml`.
+- Exposes API Gateway on NodePort 30000, Keycloak on 30001.
+
+### Observability
+- **Prometheus**: Configured in `prometheus/prometheus.yml` to scrape Actuator metrics from all services.
+- **Grafana**: Pre-configured dashboards in `grafana/` to visualize JVM memory, Kafka lags, and HTTP request metrics.
 
 ---
 
@@ -352,5 +386,9 @@ Detailed technical documentation for each service lives in the `project/services
 | User Service     | [user_service.md](./services/user_service.md)   |
 | Activity Service | [activity_service.md](./services/activity_service.md) |
 | AI Service       | [ai_service.md](./services/ai_service.md)       |
+| Moderation Serv. | [moderation_service.md](./services/moderation_service.md) |
+| Relationship S.  | [relationship_service.md](./services/relationship_service.md) |
+| Media Service    | [media_service.md](./services/media_service.md) |
+| Wefit Web        | [wefit-web.md](./services/wefit-web.md)         |
 
 Each document covers: purpose, directory structure, every Java class, entity schemas, DTO mappings, endpoint specifications, configuration, database details, and design decisions.
