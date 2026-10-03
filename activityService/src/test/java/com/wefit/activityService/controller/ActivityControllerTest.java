@@ -40,15 +40,15 @@ public class ActivityControllerTest {
     void setUp() {
         activityRequestDto = new ActivityRequestDto();
         activityRequestDto.setUserId(1L);
-        activityRequestDto.setActivityType("RUNNING");
-        activityRequestDto.setDurationMinutes(30);
+        activityRequestDto.setActivityType(com.wefit.activityService.entities.ActivityType.RUNNING);
+        activityRequestDto.setDurationInMinutes(30);
 
         activityResponseDto = new ActivityResponseDto();
         activityResponseDto.setId("activity-123");
         activityResponseDto.setUserId(1L);
-        activityResponseDto.setActivityType("RUNNING");
-        activityResponseDto.setDurationMinutes(30);
-        activityResponseDto.setTimestamp(LocalDateTime.now());
+        activityResponseDto.setActivityType(com.wefit.activityService.entities.ActivityType.RUNNING);
+        activityResponseDto.setDurationInMinutes(30);
+        activityResponseDto.setStartTime(LocalDateTime.now());
     }
 
     @Test

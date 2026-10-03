@@ -49,14 +49,14 @@ public class ActivityServiceTest {
 
         activityRequestDto = new ActivityRequestDto();
         activityRequestDto.setUserId(1L);
-        activityRequestDto.setActivityType("RUNNING");
-        activityRequestDto.setDurationMinutes(30);
+        activityRequestDto.setActivityType(com.wefit.activityService.entities.ActivityType.RUNNING);
+        activityRequestDto.setDurationInMinutes(30);
 
         activity = new Activity();
         activity.setId("activity-123");
         activity.setUserId(1L);
-        activity.setActivityType("RUNNING");
-        activity.setDurationMinutes(30);
+        activity.setActivityType(com.wefit.activityService.entities.ActivityType.RUNNING);
+        activity.setDurationInMinutes(30);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ActivityServiceTest {
 
         assertNotNull(responseDto);
         assertEquals("activity-123", responseDto.getId());
-        assertEquals("RUNNING", responseDto.getActivityType());
+        assertEquals(com.wefit.activityService.entities.ActivityType.RUNNING, responseDto.getActivityType());
 
         verify(activityRepository).save(any(Activity.class));
         verify(kafkaTemplate).send(anyString(), any(Activity.class));
