@@ -7,6 +7,9 @@ All notable changes to this project are documented in this file.
 ## [2026-10-03] — API Gateway Fixes, SSL Encryption, & Script Stabilization
 
 ### Fixed
+- **configServer & Microservices**: Resolved `InvalidAlgorithmParameterException: the trustAnchors parameter must be non-empty` by properly configuring `JAVA_TOOL_OPTIONS` to use `truststore.p12` with `-Djavax.net.ssl.trustStoreType=PKCS12` containing valid `trustedCertEntry` certificates.
+- **Observability / Loki**: Fixed `UnresolvedAddressException` and connection failure spam caused by hardcoded `http://loki:3100` hostname in `logback-spring.xml` across all services. Implemented `${LOKI_URL:-http://localhost:3100/loki/api/v1/push}` fallback.
+- **Infrastructure**: Updated `start-all.bat` and `docker-compose.yml` to ensure `loki` and `minio` containers boot automatically with port forwarding (`3100:3100`, `9092:9092` for Kafka).
 - **apiGateway**: Resolved `Port 8085 was already in use` and `java.net.ConnectException` startup failures by isolating ports and fixing Netty configurations.
 - **apiGateway**: Enabled HTTPS and TLS termination on port 8443 by configuring `wefit-keystore.jks`.
 - **Global**: All 9 microservices `application.yml` files updated to securely communicate with Config Server via `https://localhost:8888`.
