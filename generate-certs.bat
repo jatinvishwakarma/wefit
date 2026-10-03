@@ -1,6 +1,8 @@
 @echo off
 set CERTS_DIR=certs
 set KEYSTORE=%CERTS_DIR%\keystore.p12
+set TRUSTSTORE=%CERTS_DIR%\truststore.p12
+set CERT_FILE=%CERTS_DIR%\wefit.crt
 
 if not exist "%CERTS_DIR%" (
     mkdir "%CERTS_DIR%"
@@ -13,3 +15,13 @@ if not exist "%KEYSTORE%" (
 ) else (
     echo Keystore already exists.
 )
+
+if not exist "%TRUSTSTORE%" (
+    echo Generating truststore...
+    keytool -exportcert -alias wefit -keystore "%KEYSTORE%" -storepass changeit -file "%CERT_FILE%"
+    keytool -importcert -noprompt -alias wefit -file "%CERT_FILE%" -keystore "%TRUSTSTORE%" -storepass changeit -storetype PKCS12
+    echo Truststore generated at %TRUSTSTORE%
+) else (
+    echo Truststore already exists.
+)
+

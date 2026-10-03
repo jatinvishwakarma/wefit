@@ -13,7 +13,7 @@ set PATH=C:\Windows\System32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\Syst
 set WEFIT_KEYSTORE=file:%WEFIT_ROOT%certs/keystore.p12
 
 :: Trust the self-signed certificate globally for all JVMs (use absolute path)
-set JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=%WEFIT_ROOT%certs\keystore.p12 -Djavax.net.ssl.trustStorePassword=changeit
+set JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=%WEFIT_ROOT%certs\truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStoreType=PKCS12
 
 
 :: Load environment variables from .env if it exists
@@ -27,8 +27,8 @@ if exist .env (
 echo Checking for certificates...
 if exist generate-certs.bat call generate-certs.bat
 
-echo Starting Docker dependencies (Postgres, MongoDB, Kafka, Keycloak, etc.)...
-docker-compose up -d postgres mongodb zookeeper kafka keycloak redis
+echo Starting Docker dependencies (Postgres, MongoDB, Kafka, Keycloak, Loki, MinIO, etc.)...
+docker-compose up -d postgres mongodb zookeeper kafka keycloak redis loki minio
 
 echo Creating logs directory...
 if not exist logs mkdir logs
